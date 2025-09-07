@@ -8,10 +8,13 @@ import { Badge } from '@/components/ui/badge.jsx'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.jsx'
 import { Separator } from '@/components/ui/separator.jsx'
 import { ScrollArea } from '@/components/ui/scroll-area.jsx'
-import templatesData from './assets/complete_email_templates.json'
 import './App.css'
 
 function App() {
+  // État pour les données des templates
+  const [templatesData, setTemplatesData] = useState(null)
+  const [loading, setLoading] = useState(true)
+  
   // Séparer la langue de l'interface de la langue des modèles
   const [interfaceLanguage, setInterfaceLanguage] = useState('fr') // Langue de l'interface
   const [templateLanguage, setTemplateLanguage] = useState('fr')   // Langue des modèles
@@ -67,8 +70,29 @@ function App() {
 
   const t = interfaceTexts[interfaceLanguage]
 
+  // Charger les données des templates au démarrage
+  useEffect(() => {
+    const loadTemplatesData = async () => {
+      try {
+        const response = await fetch('/email-assistant/complete_email_templates.json')
+        if (!response.ok) {
+          throw new Error('Failed to load templates data')
+        }
+        const data = await response.json()
+        setTemplatesData(data)
+      } catch (error) {
+        console.error('Error loading templates data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    loadTemplatesData()
+  }, [])
+
   // Filtrer les modèles selon la recherche et la catégorie
   const filteredTemplates = useMemo(() => {
+    if (!templatesData) return []
     let filtered = templatesData.templates
 
     if (searchQuery) {
@@ -88,9 +112,10 @@ function App() {
 
   // Obtenir les catégories uniques
   const categories = useMemo(() => {
+    if (!templatesData) return []
     const cats = [...new Set(templatesData.templates.map(t => t.category))]
     return cats
-  }, [])
+  }, [templatesData])
 
   // Remplacer les variables dans le texte
   const replaceVariables = (text) => {
@@ -165,6 +190,15 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      {loading ? (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Chargement des modèles...</p>
+          </div>
+        </div>
+      ) : (
+        <>
       {/* En-tête dynamique */}
       <header className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 shadow-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -437,6 +471,8 @@ function App() {
           </div>
         </div>
       </main>
+        </>
+      )}
     </div>
   )
 }

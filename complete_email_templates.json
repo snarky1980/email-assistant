@@ -1,0 +1,665 @@
+{
+  "metadata": {
+    "version": "2.0",
+    "totalTemplates": 30,
+    "languages": ["fr", "en"],
+    "categories": [
+      "Devis et estimations",
+      "Gestion de projets", 
+      "Problèmes techniques",
+      "Communications générales",
+      "Services spécialisés"
+    ]
+  },
+  "variables": {
+    "NuméroProjet": {
+      "description": {
+        "fr": "Numéro de projet (format: 123-456456-789)",
+        "en": "Project number (format: 123-456456-789)"
+      },
+      "format": "123-456456-789",
+      "example": "123-456456-789"
+    },
+    "NbJours": {
+      "description": {
+        "fr": "Nombre de jours de travail estimés",
+        "en": "Estimated working days"
+      },
+      "format": "number",
+      "example": "3"
+    },
+    "Montant": {
+      "description": {
+        "fr": "Montant estimé en dollars",
+        "en": "Estimated amount in dollars"
+      },
+      "format": "number",
+      "example": "1500"
+    },
+    "NbJoursUrgence": {
+      "description": {
+        "fr": "Nombre de jours définissant une urgence",
+        "en": "Number of days defining urgency"
+      },
+      "format": "number",
+      "example": "2"
+    },
+    "MontantUrgence": {
+      "description": {
+        "fr": "Montant avec frais d'urgence (50% de plus)",
+        "en": "Amount with rush fees (50% more)"
+      },
+      "format": "number",
+      "example": "2250"
+    },
+    "Heure": {
+      "description": {
+        "fr": "Heure du nouveau délai",
+        "en": "New deadline time"
+      },
+      "format": "time",
+      "example": "16:00"
+    },
+    "Date": {
+      "description": {
+        "fr": "Date limite avant annulation",
+        "en": "Deadline date before cancellation"
+      },
+      "format": "date",
+      "example": "2025-09-15"
+    },
+    "NbPages": {
+      "description": {
+        "fr": "Nombre approximatif de pages",
+        "en": "Approximate number of pages"
+      },
+      "format": "number",
+      "example": "10"
+    },
+    "MontantEstimé": {
+      "description": {
+        "fr": "Montant estimé sans document",
+        "en": "Estimated amount without document"
+      },
+      "format": "number",
+      "example": "800"
+    },
+    "TarifÉditique": {
+      "description": {
+        "fr": "Tarif horaire pour l'éditique",
+        "en": "Hourly rate for desktop publishing"
+      },
+      "format": "number",
+      "example": "75"
+    },
+    "NbHeuresÉditique": {
+      "description": {
+        "fr": "Heures estimées pour l'éditique",
+        "en": "Estimated hours for desktop publishing"
+      },
+      "format": "number",
+      "example": "2"
+    },
+    "NouvelleDate": {
+      "description": {
+        "fr": "Nouvelle date de livraison proposée",
+        "en": "Proposed new delivery date"
+      },
+      "format": "date",
+      "example": "2025-09-20"
+    },
+    "HeureLimite": {
+      "description": {
+        "fr": "Heure limite pour confirmation",
+        "en": "Deadline time for confirmation"
+      },
+      "format": "time",
+      "example": "17:00"
+    },
+    "NouveauDélai": {
+      "description": {
+        "fr": "Nouveau délai de livraison proposé",
+        "en": "Proposed new delivery deadline"
+      },
+      "format": "date",
+      "example": "2025-09-25"
+    },
+    "LangueSource": {
+      "description": {
+        "fr": "Langue source spécifiée",
+        "en": "Specified source language"
+      },
+      "format": "text",
+      "example": "français"
+    },
+    "LangueCible": {
+      "description": {
+        "fr": "Langue cible spécifiée",
+        "en": "Specified target language"
+      },
+      "format": "text",
+      "example": "anglais"
+    },
+    "LanguePrésente": {
+      "description": {
+        "fr": "Langue détectée dans le document",
+        "en": "Language detected in document"
+      },
+      "format": "text",
+      "example": "espagnol"
+    },
+    "DateInitiale": {
+      "description": {
+        "fr": "Date de livraison initialement demandée",
+        "en": "Originally requested delivery date"
+      },
+      "format": "date",
+      "example": "2025-09-10"
+    },
+    "MontantMin": {
+      "description": {
+        "fr": "Montant estimé minimal pour transcription",
+        "en": "Minimum estimated amount for transcription"
+      },
+      "format": "number",
+      "example": "500"
+    },
+    "MontantMax": {
+      "description": {
+        "fr": "Montant estimé maximal pour transcription",
+        "en": "Maximum estimated amount for transcription"
+      },
+      "format": "number",
+      "example": "1200"
+    },
+    "NuméroProjet1": {
+      "description": {
+        "fr": "Numéro de projet 1 pour priorisation",
+        "en": "Project number 1 for prioritization"
+      },
+      "format": "123-456456-789",
+      "example": "123-456456-789"
+    },
+    "NuméroProjet2": {
+      "description": {
+        "fr": "Numéro de projet 2 pour priorisation",
+        "en": "Project number 2 for prioritization"
+      },
+      "format": "123-456456-789",
+      "example": "124-456456-790"
+    },
+    "NuméroProjet3": {
+      "description": {
+        "fr": "Numéro de projet 3 pour priorisation",
+        "en": "Project number 3 for prioritization"
+      },
+      "format": "123-456456-789",
+      "example": "125-456456-791"
+    }
+  },
+  "templates": [
+    {
+      "id": "devis_avec_approbation",
+      "category": "Devis et estimations",
+      "title": {
+        "fr": "Devis avec approbation requise",
+        "en": "Quote with approval required"
+      },
+      "description": {
+        "fr": "Soumission d'un devis qui requiert une approbation",
+        "en": "Quote submission requiring approval"
+      },
+      "subject": {
+        "fr": "Projet <<NuméroProjet>> – Devis à approbation requise",
+        "en": "Project <<NuméroProjet>> – Quote requiring approval"
+      },
+      "body": {
+        "fr": "Bonjour,\n\nNous vous remercions pour votre projet <<NuméroProjet>>. Celui-ci est évalué à environ <<NbJours>> jour(s) de travail. L'estimation des coûts s'élève à <<Montant>>$.\n\nLe montant estimé pourrait varier de plus ou moins 10 %, selon l'évaluation finale du volume et de la complexité des documents. Des frais d'urgence de 50 % s'appliqueront si le projet doit être livré dans un délai de moins de <<NbJoursUrgence>> jour(s) ouvrable(s) ou de moins de 24 heures. Le coût révisé serait alors de <<MontantUrgence>> $.\n\nNous vous confirmons que ce projet sera traité uniquement après réception de votre approbation. Afin d'assurer un résultat fidèle et professionnel, et compte tenu de la disponibilité des ressources, la date de livraison pourrait être ajustée une fois l'approbation reçue.\n\nPour toute question ou tout renseignement complémentaire, n'hésitez pas à communiquer avec nous.\n\nBien cordialement,",
+        "en": "Hello,\n\nThank you for your project <<NuméroProjet>>. It is estimated at approximately <<NbJours>> working day(s). The cost estimate amounts to $<<Montant>>.\n\nThe estimated amount could vary by plus or minus 10%, depending on the final assessment of the volume and complexity of the documents. Rush fees of 50% will apply if the project must be delivered within less than <<NbJoursUrgence>> business day(s) or less than 24 hours. The revised cost would then be $<<MontantUrgence>>.\n\nWe confirm that this project will be processed only upon receipt of your approval. To ensure an accurate and professional result, and given resource availability, the delivery date may be adjusted once approval is received.\n\nFor any questions or additional information, please do not hesitate to contact us.\n\nBest regards,"
+      },
+      "variables": ["NuméroProjet", "NbJours", "Montant", "NbJoursUrgence", "MontantUrgence"]
+    },
+    {
+      "id": "devis_sans_approbation",
+      "category": "Devis et estimations",
+      "title": {
+        "fr": "Devis sans approbation requise",
+        "en": "Quote without approval required"
+      },
+      "description": {
+        "fr": "Devis confirmé sans nécessité d'approbation",
+        "en": "Confirmed quote without approval needed"
+      },
+      "subject": {
+        "fr": "Projet <<NuméroProjet>> – Devis et confirmation",
+        "en": "Project <<NuméroProjet>> – Quote and confirmation"
+      },
+      "body": {
+        "fr": "Bonjour,\n\nNous vous remercions pour votre projet <<NuméroProjet>>. L'estimation des coûts s'élève à <<Montant>> $. Conformément à vos instructions, nous procédons dès maintenant au traitement de votre projet et assurerons la livraison dans le délai prévu.\n\nPour toute question ou tout renseignement complémentaire, n'hésitez pas à communiquer avec nous.\n\nBien cordialement,",
+        "en": "Hello,\n\nThank you for your project <<NuméroProjet>>. The cost estimate amounts to $<<Montant>>. In accordance with your instructions, we are now proceeding with the processing of your project and will ensure delivery within the scheduled timeframe.\n\nFor any questions or additional information, please do not hesitate to contact us.\n\nBest regards,"
+      },
+      "variables": ["NuméroProjet", "Montant"]
+    },
+    {
+      "id": "projet_attente_suivi",
+      "category": "Gestion de projets",
+      "title": {
+        "fr": "Projet en attente – suivi d'approbation",
+        "en": "Pending project – approval follow-up"
+      },
+      "description": {
+        "fr": "Suivi pour projet en attente d'approbation",
+        "en": "Follow-up for project awaiting approval"
+      },
+      "subject": {
+        "fr": "Projet <<NuméroProjet>> – Suivi d'approbation",
+        "en": "Project <<NuméroProjet>> – Approval follow-up"
+      },
+      "body": {
+        "fr": "Bonjour,\n\nCeci est un suivi concernant votre projet <<NuméroProjet>>, actuellement en attente de confirmation.\n\nNous vous informons que les projets en attente ne peuvent être conservés au-delà d'un certain délai. Si aucune réponse n'est reçue d'ici <<Heure>> le <<Date>>, le projet sera annulé.\n\nVous pourrez toutefois soumettre un nouveau projet en tout temps, lorsque vous souhaiterez aller de l'avant.\n\nPour toute question ou tout renseignement complémentaire, n'hésitez pas à communiquer avec nous.\n\nBien cordialement,",
+        "en": "Hello,\n\nThis is a follow-up regarding your project <<NuméroProjet>>, currently awaiting confirmation.\n\nWe inform you that pending projects cannot be kept beyond a certain timeframe. If no response is received by <<Heure>> on <<Date>>, the project will be cancelled.\n\nYou may, however, submit a new project at any time when you wish to proceed.\n\nFor any questions or additional information, please do not hesitate to contact us.\n\nBest regards,"
+      },
+      "variables": ["NuméroProjet", "Heure", "Date"]
+    },
+    {
+      "id": "devis_sans_document",
+      "category": "Devis et estimations",
+      "title": {
+        "fr": "Devis – sans document reçu",
+        "en": "Quote – no document received"
+      },
+      "description": {
+        "fr": "Devis estimatif sans document fourni",
+        "en": "Estimated quote without provided document"
+      },
+      "subject": {
+        "fr": "Devis – en attente de document",
+        "en": "Quote – awaiting document"
+      },
+      "body": {
+        "fr": "Bonjour,\n\nIl nous est difficile de fournir une estimation sans avoir accès au document à traiter. À titre indicatif, un document d'environ <<NbPages>> pages nécessiterait environ <<NbJours>> jour(s) de travail. Les frais estimés se situent autour de <<MontantEstimé>> $.\n\nSi des frais d'urgence s'appliquent — notamment si le projet doit être livré dans un délai de moins de <<NbJoursUrgence>> jour(s) ouvrable(s) ou de moins de 24 heures —, le coût pourrait s'élever à <<MontantUrgence>> $.\n\nPour obtenir une estimation plus précise, nous vous invitons à soumettre un projet dans le système de commande en ligne, en indiquant clairement « devis seulement » dans la section des instructions spéciales.\n\nPour toute question ou information complémentaire, n'hésitez pas à communiquer avec nous.\n\nBien cordialement,",
+        "en": "Hello,\n\nIt is difficult for us to provide an estimate without having access to the document to be processed. As an indication, a document of approximately <<NbPages>> pages would require approximately <<NbJours>> working day(s). The estimated fees are around $<<MontantEstimé>>.\n\nIf rush fees apply—particularly if the project must be delivered within less than <<NbJoursUrgence>> business day(s) or less than 24 hours—the cost could rise to $<<MontantUrgence>>.\n\nTo obtain a more accurate estimate, we invite you to submit a project in the online ordering system, clearly indicating \"quote only\" in the special instructions section.\n\nFor any questions or additional information, please do not hesitate to contact us.\n\nBest regards,"
+      },
+      "variables": ["NbPages", "NbJours", "MontantEstimé", "NbJoursUrgence", "MontantUrgence"]
+    },
+    {
+      "id": "fichier_pdf_modifiable",
+      "category": "Problèmes techniques",
+      "title": {
+        "fr": "Fichier PDF – Demande de version modifiable",
+        "en": "PDF file – Request for editable version"
+      },
+      "description": {
+        "fr": "Demande de fichier source modifiable pour PDF",
+        "en": "Request for editable source file for PDF"
+      },
+      "subject": {
+        "fr": "Projet <<NuméroProjet>> – Document PDF : document modifiable requis",
+        "en": "Project <<NuméroProjet>> – PDF document: editable document required"
+      },
+      "body": {
+        "fr": "Bonjour,\n\nNous vous remercions pour votre projet <<NuméroProjet>>.\n\nLe fichier transmis est en format PDF, qui ne peut être utilisé tel quel par nos traducteurs. Afin d'assurer un traitement adéquat, nous aurions besoin du fichier source modifiable original (Word, Excel, etc.). Une simple conversion automatique du PDF n'est pas suffisante, car le document doit être nettoyé et préparé techniquement afin de préserver la mise en page et d'éviter des problèmes lors de la traduction.\n\nVoici les options possibles :\n1. Vous pouvez nous transmettre le fichier original modifiable;\n2. Nous pouvons traduire le contenu du PDF, mais la mise en page pourrait ne pas être fidèle à celle du document original;\n3. Notre équipe d'éditique peut convertir et préparer le document avant la traduction. Ce service administratif est facturé à <<TarifÉditique>> $/heure. Le temps estimé pour ce travail est d'environ <<NbHeuresÉditique>> heure(s), facturé selon le temps réel, jusqu'à concurrence de cette estimation.\n\nNous vous serions reconnaissants de bien vouloir nous indiquer l'option retenue afin que nous puissions procéder au traitement de votre projet.\n\nBien cordialement,",
+        "en": "Hello,\n\nThank you for your project <<NuméroProjet>>.\n\nThe transmitted file is in PDF format, which cannot be used as is by our translators. To ensure adequate processing, we would need the original editable source file (Word, Excel, etc.). A simple automatic conversion of the PDF is not sufficient, as the document must be cleaned and technically prepared to preserve the layout and avoid problems during translation.\n\nHere are the possible options:\n1. You can send us the original editable file;\n2. We can translate the content of the PDF, but the layout may not be faithful to that of the original document;\n3. Our desktop publishing team can convert and prepare the document before translation. This administrative service is billed at $<<TarifÉditique>>/hour. The estimated time for this work is approximately <<NbHeuresÉditique>> hour(s), billed according to actual time, up to this estimate.\n\nWe would be grateful if you could indicate the chosen option so that we can proceed with processing your project.\n\nBest regards,"
+      },
+      "variables": ["NuméroProjet", "TarifÉditique", "NbHeuresÉditique"]
+    },
+    {
+      "id": "urgence_frais_additionnels",
+      "category": "Gestion de projets",
+      "title": {
+        "fr": "Urgence – Notification de frais additionnels",
+        "en": "Urgent – Additional fees notification"
+      },
+      "description": {
+        "fr": "Notification des frais d'urgence applicables",
+        "en": "Notification of applicable rush fees"
+      },
+      "subject": {
+        "fr": "Projet <<NuméroProjet>> – Frais d'urgence",
+        "en": "Project <<NuméroProjet>> – Rush fees"
+      },
+      "body": {
+        "fr": "Bonjour,\n\nNous vous remercions pour votre projet <<NuméroProjet>>.\n\nComme le délai prévu pour traiter ce projet est de moins de <<NbJours>> jour(s) ouvrable(s) (ou de moins de 24 heures), des frais d'urgence de 50 % s'appliqueront.\n\nPour éviter l'application de ces frais, nous vous suggérons de reporter la date de livraison à <<NouvelleDate>>.\n\nNous vous serions reconnaissants de bien vouloir nous confirmer votre préférence d'ici <<HeureLimite>> aujourd'hui.\n\nPour toute question ou tout renseignement complémentaire, n'hésitez pas à communiquer avec nous.\n\nBien cordialement,",
+        "en": "Hello,\n\nThank you for your project <<NuméroProjet>>.\n\nSince the scheduled timeframe to process this project is less than <<NbJours>> business day(s) (or less than 24 hours), rush fees of 50% will apply.\n\nTo avoid the application of these fees, we suggest postponing the delivery date to <<NouvelleDate>>.\n\nWe would be grateful if you could confirm your preference by <<HeureLimite>> today.\n\nFor any questions or additional information, please do not hesitate to contact us.\n\nBest regards,"
+      },
+      "variables": ["NuméroProjet", "NbJours", "NouvelleDate", "HeureLimite"]
+    },
+    {
+      "id": "demande_report_livraison",
+      "category": "Gestion de projets",
+      "title": {
+        "fr": "Demande de report de date de livraison",
+        "en": "Request for delivery date postponement"
+      },
+      "description": {
+        "fr": "Demande de report avec justification",
+        "en": "Postponement request with justification"
+      },
+      "subject": {
+        "fr": "Projet <<NuméroProjet>> – Report de date de livraison",
+        "en": "Project <<NuméroProjet>> – Delivery date postponement"
+      },
+      "body": {
+        "fr": "Bonjour,\n\nNous vous remercions pour votre projet <<NuméroProjet>>.\n\nLe volume du document est particulièrement important, ce qui exige plus de temps pour en assurer le traitement optimal.\n\nDans ce contexte, un délai supplémentaire serait nécessaire. Nous vous suggérons de reporter la date de livraison au <<NouvelleDate>>. Ce report nous permettrait d'assurer un résultat fidèle et professionnel.\n\nNous procéderons dès réception de votre réponse.\n\nPour toute question ou tout renseignement complémentaire, n'hésitez pas à communiquer avec nous.\n\nBien cordialement,",
+        "en": "Hello,\n\nThank you for your project <<NuméroProjet>>.\n\nThe document volume is particularly significant, which requires more time to ensure optimal processing.\n\nIn this context, additional time would be necessary. We suggest postponing the delivery date to <<NouvelleDate>>. This postponement would allow us to ensure an accurate and professional result.\n\nWe will proceed upon receipt of your response.\n\nFor any questions or additional information, please do not hesitate to contact us.\n\nBest regards,"
+      },
+      "variables": ["NuméroProjet", "NouvelleDate"]
+    },
+    {
+      "id": "projet_annule",
+      "category": "Gestion de projets",
+      "title": {
+        "fr": "Projet annulé",
+        "en": "Cancelled project"
+      },
+      "description": {
+        "fr": "Confirmation d'annulation de projet",
+        "en": "Project cancellation confirmation"
+      },
+      "subject": {
+        "fr": "Projet <<NuméroProjet>> – Annulation",
+        "en": "Project <<NuméroProjet>> – Cancellation"
+      },
+      "body": {
+        "fr": "Bonjour,\n\nNous avons bien pris note de l'annulation de votre projet <<NuméroProjet>> dans le système.\n\nLe projet n'avait pas encore été pris en charge au moment de l'annulation. Aucun frais ne vous sera donc facturé et le dossier est considéré comme clos de notre côté.\n\nNous vous remercions de votre compréhension.\n\nPour toute question ou tout renseignement complémentaire, n'hésitez pas à communiquer avec nous.\n\nBien cordialement,",
+        "en": "Hello,\n\nWe have duly noted the cancellation of your project <<NuméroProjet>> in the system.\n\nThe project had not yet been taken over at the time of cancellation. No fees will therefore be charged and the file is considered closed on our end.\n\nWe thank you for your understanding.\n\nFor any questions or additional information, please do not hesitate to contact us.\n\nBest regards,"
+      },
+      "variables": ["NuméroProjet"]
+    },
+    {
+      "id": "images_non_modifiables",
+      "category": "Problèmes techniques",
+      "title": {
+        "fr": "Images non modifiables",
+        "en": "Non-editable images"
+      },
+      "description": {
+        "fr": "Problème avec des images non éditables",
+        "en": "Issue with non-editable images"
+      },
+      "subject": {
+        "fr": "Projet <<NuméroProjet>> – Images non modifiables",
+        "en": "Project <<NuméroProjet>> – Non-editable images"
+      },
+      "body": {
+        "fr": "Bonjour,\n\nNous vous remercions pour votre projet <<NuméroProjet>>.\n\nLe document contient des images avec du texte qui ne peuvent être modifiées directement. Pour assurer une traduction complète, nous aurions besoin des fichiers sources originaux des images ou d'une version modifiable du document.\n\nVoici les options possibles :\n1. Vous pouvez nous fournir les fichiers sources des images;\n2. Nous pouvons traduire le texte visible et vous fournir une liste des éléments à modifier dans les images;\n3. Notre équipe d'éditique peut recréer les images avec le texte traduit moyennant des frais supplémentaires.\n\nNous vous serions reconnaissants de nous indiquer votre préférence.\n\nBien cordialement,",
+        "en": "Hello,\n\nThank you for your project <<NuméroProjet>>.\n\nThe document contains images with text that cannot be directly modified. To ensure complete translation, we would need the original source files of the images or an editable version of the document.\n\nHere are the possible options:\n1. You can provide us with the source files of the images;\n2. We can translate the visible text and provide you with a list of elements to modify in the images;\n3. Our desktop publishing team can recreate the images with translated text for additional fees.\n\nWe would be grateful if you could indicate your preference.\n\nBest regards,"
+      },
+      "variables": ["NuméroProjet"]
+    },
+    {
+      "id": "saisies_ecran_requises",
+      "category": "Problèmes techniques",
+      "title": {
+        "fr": "Saisies d'écran requises",
+        "en": "Screenshots required"
+      },
+      "description": {
+        "fr": "Demande de nouvelles saisies d'écran",
+        "en": "Request for new screenshots"
+      },
+      "subject": {
+        "fr": "Projet <<NuméroProjet>> – Saisies d'écran requises",
+        "en": "Project <<NuméroProjet>> – Screenshots required"
+      },
+      "body": {
+        "fr": "Bonjour,\n\nNous vous remercions pour votre projet <<NuméroProjet>>.\n\nLe document contient des saisies d'écran qui devront être refaites dans la langue cible pour assurer la cohérence de la traduction.\n\nNous vous recommandons de :\n1. Prendre de nouvelles saisies d'écran dans la langue traduite une fois la traduction terminée;\n2. Nous fournir les instructions pour reproduire les saisies d'écran;\n3. Ou nous indiquer si vous préférez que nous traduisions uniquement le texte et que vous vous occupiez des images.\n\nVeuillez nous faire savoir comment vous souhaitez procéder.\n\nBien cordialement,",
+        "en": "Hello,\n\nThank you for your project <<NuméroProjet>>.\n\nThe document contains screenshots that will need to be retaken in the target language to ensure translation consistency.\n\nWe recommend that you:\n1. Take new screenshots in the translated language once the translation is complete;\n2. Provide us with instructions to reproduce the screenshots;\n3. Or let us know if you prefer that we translate only the text and you handle the images.\n\nPlease let us know how you would like to proceed.\n\nBest regards,"
+      },
+      "variables": ["NuméroProjet"]
+    },
+    {
+      "id": "documents_proteges",
+      "category": "Problèmes techniques",
+      "title": {
+        "fr": "Documents protégés",
+        "en": "Protected documents"
+      },
+      "description": {
+        "fr": "Problème avec des documents protégés par mot de passe",
+        "en": "Issue with password-protected documents"
+      },
+      "subject": {
+        "fr": "Projet <<NuméroProjet>> – Documents protégés",
+        "en": "Project <<NuméroProjet>> – Protected documents"
+      },
+      "body": {
+        "fr": "Bonjour,\n\nNous vous remercions pour votre projet <<NuméroProjet>>.\n\nLe document transmis est protégé par un mot de passe et ne peut être ouvert pour traitement. Pour procéder à la traduction, nous aurions besoin :\n\n1. Du mot de passe pour ouvrir le document; ou\n2. D'une version non protégée du document; ou\n3. D'une version PDF non protégée si la mise en page n'est pas critique.\n\nVeuillez nous transmettre l'information nécessaire pour que nous puissions procéder au traitement de votre projet.\n\nBien cordialement,",
+        "en": "Hello,\n\nThank you for your project <<NuméroProjet>>.\n\nThe transmitted document is password-protected and cannot be opened for processing. To proceed with the translation, we would need:\n\n1. The password to open the document; or\n2. An unprotected version of the document; or\n3. An unprotected PDF version if layout is not critical.\n\nPlease provide us with the necessary information so we can proceed with processing your project.\n\nBest regards,"
+      },
+      "variables": ["NuméroProjet"]
+    },
+    {
+      "id": "panne_systeme",
+      "category": "Problèmes techniques",
+      "title": {
+        "fr": "Panne du système",
+        "en": "System outage"
+      },
+      "description": {
+        "fr": "Notification de panne technique",
+        "en": "Technical outage notification"
+      },
+      "subject": {
+        "fr": "Projet <<NuméroProjet>> – Panne technique",
+        "en": "Project <<NuméroProjet>> – Technical outage"
+      },
+      "body": {
+        "fr": "Bonjour,\n\nNous vous remercions pour votre projet <<NuméroProjet>>.\n\nNous éprouvons actuellement des difficultés techniques qui retardent le traitement de votre projet. Nos équipes techniques travaillent activement à résoudre le problème.\n\nNous estimons que le délai supplémentaire sera d'environ <<NbJours>> jour(s). La nouvelle date de livraison prévue est le <<NouvelleDate>>.\n\nNous nous excusons pour ce contretemps et vous tiendrons informé de l'évolution de la situation.\n\nBien cordialement,",
+        "en": "Hello,\n\nThank you for your project <<NuméroProjet>>.\n\nWe are currently experiencing technical difficulties that are delaying the processing of your project. Our technical teams are actively working to resolve the issue.\n\nWe estimate that the additional delay will be approximately <<NbJours>> day(s). The new expected delivery date is <<NouvelleDate>>.\n\nWe apologize for this inconvenience and will keep you informed of developments.\n\nBest regards,"
+      },
+      "variables": ["NuméroProjet", "NbJours", "NouvelleDate"]
+    },
+    {
+      "id": "confirmation_reception",
+      "category": "Communications générales",
+      "title": {
+        "fr": "Confirmation de réception",
+        "en": "Receipt confirmation"
+      },
+      "description": {
+        "fr": "Accusé de réception de projet",
+        "en": "Project receipt acknowledgment"
+      },
+      "subject": {
+        "fr": "Projet <<NuméroProjet>> – Confirmation de réception",
+        "en": "Project <<NuméroProjet>> – Receipt confirmation"
+      },
+      "body": {
+        "fr": "Bonjour,\n\nNous accusons réception de votre projet <<NuméroProjet>> et vous remercions de votre confiance.\n\nVotre projet est maintenant en cours de traitement et sera livré selon le délai convenu. Vous recevrez une notification par courriel dès que la traduction sera terminée.\n\nPour toute question ou tout renseignement complémentaire, n'hésitez pas à communiquer avec nous.\n\nBien cordialement,",
+        "en": "Hello,\n\nWe acknowledge receipt of your project <<NuméroProjet>> and thank you for your trust.\n\nYour project is now being processed and will be delivered according to the agreed timeline. You will receive an email notification as soon as the translation is completed.\n\nFor any questions or additional information, please do not hesitate to contact us.\n\nBest regards,"
+      },
+      "variables": ["NuméroProjet"]
+    },
+    {
+      "id": "demande_documents_reference",
+      "category": "Communications générales",
+      "title": {
+        "fr": "Demande de documents de référence",
+        "en": "Request for reference documents"
+      },
+      "description": {
+        "fr": "Demande de matériel de référence supplémentaire",
+        "en": "Request for additional reference material"
+      },
+      "subject": {
+        "fr": "Projet <<NuméroProjet>> – Documents de référence",
+        "en": "Project <<NuméroProjet>> – Reference documents"
+      },
+      "body": {
+        "fr": "Bonjour,\n\nNous vous remercions pour votre projet <<NuméroProjet>>.\n\nPour assurer la meilleure qualité de traduction possible, nous aurions besoin de documents de référence supplémentaires :\n\n• Glossaires ou lexiques spécialisés\n• Documents similaires déjà traduits\n• Guides de style ou préférences terminologiques\n• Tout autre matériel de référence pertinent\n\nCes documents nous aideront à maintenir la cohérence et la précision de la traduction.\n\nBien cordialement,",
+        "en": "Hello,\n\nThank you for your project <<NuméroProjet>>.\n\nTo ensure the best possible translation quality, we would need additional reference documents:\n\n• Specialized glossaries or lexicons\n• Similar documents already translated\n• Style guides or terminological preferences\n• Any other relevant reference material\n\nThese documents will help us maintain consistency and accuracy in the translation.\n\nBest regards,"
+      },
+      "variables": ["NuméroProjet"]
+    },
+    {
+      "id": "ajustement_date_livraison",
+      "category": "Communications générales",
+      "title": {
+        "fr": "Ajustement de date de livraison",
+        "en": "Delivery date adjustment"
+      },
+      "description": {
+        "fr": "Notification d'ajustement de la date de livraison",
+        "en": "Delivery date adjustment notification"
+      },
+      "subject": {
+        "fr": "Projet <<NuméroProjet>> – Ajustement de date",
+        "en": "Project <<NuméroProjet>> – Date adjustment"
+      },
+      "body": {
+        "fr": "Bonjour,\n\nNous vous remercions pour votre projet <<NuméroProjet>>.\n\nSuite à une évaluation plus approfondie du document, nous devons ajuster légèrement la date de livraison. La nouvelle date prévue est le <<NouvelleDate>> au lieu du <<DateInitiale>> initialement prévu.\n\nCet ajustement nous permettra d'assurer la qualité optimale de la traduction. Nous nous excusons pour tout inconvénient que cela pourrait causer.\n\nPour toute question, n'hésitez pas à nous contacter.\n\nBien cordialement,",
+        "en": "Hello,\n\nThank you for your project <<NuméroProjet>>.\n\nFollowing a more thorough evaluation of the document, we need to slightly adjust the delivery date. The new expected date is <<NouvelleDate>> instead of <<DateInitiale>> initially planned.\n\nThis adjustment will allow us to ensure optimal translation quality. We apologize for any inconvenience this may cause.\n\nFor any questions, please do not hesitate to contact us.\n\nBest regards,"
+      },
+      "variables": ["NuméroProjet", "NouvelleDate", "DateInitiale"]
+    },
+    {
+      "id": "langue_incorrecte",
+      "category": "Problèmes techniques",
+      "title": {
+        "fr": "Langue source incorrecte",
+        "en": "Incorrect source language"
+      },
+      "description": {
+        "fr": "Le document n'est pas dans la langue source spécifiée",
+        "en": "Document is not in the specified source language"
+      },
+      "subject": {
+        "fr": "Projet <<NuméroProjet>> – Langue source à clarifier",
+        "en": "Project <<NuméroProjet>> – Source language clarification"
+      },
+      "body": {
+        "fr": "Bonjour,\n\nNous vous remercions pour votre projet <<NuméroProjet>>.\n\nNous avons remarqué que le document semble être en <<LanguePrésente>> plutôt qu'en <<LangueSource>> comme spécifié dans votre commande. Pour procéder correctement à la traduction vers <<LangueCible>>, nous devons clarifier la langue source.\n\nVeuillez confirmer :\n1. Si le document est effectivement en <<LanguePrésente>> et doit être traduit vers <<LangueCible>>; ou\n2. Si nous devons attendre un document en <<LangueSource>>.\n\nNous procéderons dès réception de votre confirmation.\n\nBien cordialement,",
+        "en": "Hello,\n\nThank you for your project <<NuméroProjet>>.\n\nWe noticed that the document appears to be in <<LanguePrésente>> rather than in <<LangueSource>> as specified in your order. To proceed correctly with the translation to <<LangueCible>>, we need to clarify the source language.\n\nPlease confirm:\n1. If the document is indeed in <<LanguePrésente>> and should be translated to <<LangueCible>>; or\n2. If we should wait for a document in <<LangueSource>>.\n\nWe will proceed upon receipt of your confirmation.\n\nBest regards,"
+      },
+      "variables": ["NuméroProjet", "LanguePrésente", "LangueSource", "LangueCible"]
+    },
+    {
+      "id": "devis_transcription",
+      "category": "Services spécialisés",
+      "title": {
+        "fr": "Devis pour transcription",
+        "en": "Quote for transcription"
+      },
+      "description": {
+        "fr": "Estimation pour services de transcription audio/vidéo",
+        "en": "Estimate for audio/video transcription services"
+      },
+      "subject": {
+        "fr": "Projet <<NuméroProjet>> – Devis transcription",
+        "en": "Project <<NuméroProjet>> – Transcription quote"
+      },
+      "body": {
+        "fr": "Bonjour,\n\nNous vous remercions pour votre demande de transcription (projet <<NuméroProjet>>).\n\nSelon notre évaluation préliminaire, les frais de transcription se situeraient entre <<MontantMin>>$ et <<MontantMax>>$, selon la qualité audio et la complexité du contenu.\n\nLe délai estimé est d'environ <<NbJours>> jour(s) de travail. Des frais d'urgence de 50% s'appliqueront pour un délai de moins de <<NbJoursUrgence>> jour(s).\n\nVeuillez confirmer si vous souhaitez procéder avec ce service.\n\nBien cordialement,",
+        "en": "Hello,\n\nThank you for your transcription request (project <<NuméroProjet>>).\n\nAccording to our preliminary assessment, transcription fees would range between $<<MontantMin>> and $<<MontantMax>>, depending on audio quality and content complexity.\n\nThe estimated timeframe is approximately <<NbJours>> working day(s). Rush fees of 50% will apply for a deadline of less than <<NbJoursUrgence>> day(s).\n\nPlease confirm if you wish to proceed with this service.\n\nBest regards,"
+      },
+      "variables": ["NuméroProjet", "MontantMin", "MontantMax", "NbJours", "NbJoursUrgence"]
+    },
+    {
+      "id": "services_langage_clair",
+      "category": "Services spécialisés",
+      "title": {
+        "fr": "Services en langage clair",
+        "en": "Plain language services"
+      },
+      "description": {
+        "fr": "Offre de services de rédaction en langage clair",
+        "en": "Plain language writing services offer"
+      },
+      "subject": {
+        "fr": "Projet <<NuméroProjet>> – Services langage clair",
+        "en": "Project <<NuméroProjet>> – Plain language services"
+      },
+      "body": {
+        "fr": "Bonjour,\n\nNous vous remercions pour votre projet <<NuméroProjet>>.\n\nNous offrons des services de rédaction en langage clair pour rendre vos documents plus accessibles au grand public. Ces services incluent :\n\n• Simplification du vocabulaire technique\n• Restructuration des phrases complexes\n• Amélioration de la lisibilité générale\n• Respect des principes du langage clair\n\nLe coût estimé pour ce service est de <<Montant>>$ et le délai est d'environ <<NbJours>> jour(s).\n\nSouhaitez-vous obtenir plus d'information sur ces services?\n\nBien cordialement,",
+        "en": "Hello,\n\nThank you for your project <<NuméroProjet>>.\n\nWe offer plain language writing services to make your documents more accessible to the general public. These services include:\n\n• Simplification of technical vocabulary\n• Restructuring of complex sentences\n• Improvement of overall readability\n• Adherence to plain language principles\n\nThe estimated cost for this service is $<<Montant>> and the timeframe is approximately <<NbJours>> day(s).\n\nWould you like more information about these services?\n\nBest regards,"
+      },
+      "variables": ["NuméroProjet", "Montant", "NbJours"]
+    },
+    {
+      "id": "revision_comparative",
+      "category": "Services spécialisés",
+      "title": {
+        "fr": "Révision comparative",
+        "en": "Comparative revision"
+      },
+      "description": {
+        "fr": "Offre de services de révision comparative",
+        "en": "Comparative revision services offer"
+      },
+      "subject": {
+        "fr": "Projet <<NuméroProjet>> – Révision comparative",
+        "en": "Project <<NuméroProjet>> – Comparative revision"
+      },
+      "body": {
+        "fr": "Bonjour,\n\nNous vous remercions pour votre projet <<NuméroProjet>>.\n\nNous offrons un service de révision comparative qui consiste à comparer votre traduction existante avec le document source pour identifier :\n\n• Les omissions ou ajouts\n• Les erreurs de traduction\n• Les incohérences terminologiques\n• Les problèmes de mise en page\n\nLe coût estimé est de <<Montant>>$ pour environ <<NbJours>> jour(s) de travail.\n\nCe service vous intéresse-t-il?\n\nBien cordialement,",
+        "en": "Hello,\n\nThank you for your project <<NuméroProjet>>.\n\nWe offer a comparative revision service that involves comparing your existing translation with the source document to identify:\n\n• Omissions or additions\n• Translation errors\n• Terminological inconsistencies\n• Layout issues\n\nThe estimated cost is $<<Montant>> for approximately <<NbJours>> working day(s).\n\nAre you interested in this service?\n\nBest regards,"
+      },
+      "variables": ["NuméroProjet", "Montant", "NbJours"]
+    },
+    {
+      "id": "droits_auteur",
+      "category": "Services spécialisés",
+      "title": {
+        "fr": "Droits d'auteur",
+        "en": "Copyright"
+      },
+      "description": {
+        "fr": "Clarification concernant les droits d'auteur",
+        "en": "Copyright clarification"
+      },
+      "subject": {
+        "fr": "Projet <<NuméroProjet>> – Droits d'auteur",
+        "en": "Project <<NuméroProjet>> – Copyright"
+      },
+      "body": {
+        "fr": "Bonjour,\n\nNous vous remercions pour votre projet <<NuméroProjet>>.\n\nAvant de procéder à la traduction, nous devons nous assurer que vous détenez les droits nécessaires pour faire traduire ce document. Veuillez confirmer que :\n\n• Vous êtes le propriétaire des droits d'auteur; ou\n• Vous avez obtenu l'autorisation du détenteur des droits; ou\n• Le document est dans le domaine public.\n\nCette confirmation est nécessaire pour que nous puissions procéder au traitement de votre projet.\n\nBien cordialement,",
+        "en": "Hello,\n\nThank you for your project <<NuméroProjet>>.\n\nBefore proceeding with the translation, we need to ensure that you hold the necessary rights to have this document translated. Please confirm that:\n\n• You are the copyright owner; or\n• You have obtained authorization from the rights holder; or\n• The document is in the public domain.\n\nThis confirmation is necessary for us to proceed with processing your project.\n\nBest regards,"
+      },
+      "variables": ["NuméroProjet"]
+    },
+    {
+      "id": "livraison_reportee_retard",
+      "category": "Gestion de projets",
+      "title": {
+        "fr": "Livraison reportée – Retard",
+        "en": "Delayed delivery – Late"
+      },
+      "description": {
+        "fr": "Notification de retard de livraison",
+        "en": "Delivery delay notification"
+      },
+      "subject": {
+        "fr": "Projet <<NuméroProjet>> – Retard de livraison",
+        "en": "Project <<NuméroProjet>> – Delivery delay"
+      },
+      "body": {
+        "fr": "Bonjour,\n\nNous vous remercions pour votre projet <<NuméroProjet>>.\n\nNous vous informons malheureusement que la livraison de votre projet subira un retard. La nouvelle date de livraison est prévue pour le <<NouvelleDate>> au lieu du <<DateInitiale>>.\n\nCe retard est dû à des circonstances imprévues et nous nous excusons sincèrement pour tout inconvénient causé.\n\nNous travaillons activement pour minimiser ce délai et vous tiendrons informé de tout développement.\n\nBien cordialement,",
+        "en": "Hello,\n\nThank you for your project <<NuméroProjet>>.\n\nWe regret to inform you that the delivery of your project will be delayed. The new delivery date is scheduled for <<NouvelleDate>> instead of <<DateInitiale>>.\n\nThis delay is due to unforeseen circumstances and we sincerely apologize for any inconvenience caused.\n\nWe are actively working to minimize this delay and will keep you informed of any developments.\n\nBest regards,"
+      },
+      "variables": ["NuméroProjet", "NouvelleDate", "DateInitiale"]
+    },
+    {
+      "id": "demande_priorisation",
+      "category": "Gestion de projets",
+      "title": {
+        "fr": "Demande de priorisation",
+        "en": "Prioritization request"
+      },
+      "description": {
+        "fr": "Demande de priorisation entre plusieurs projets",
+        "en": "Request for prioritization between multiple projects"
+      },
+      "subject": {
+        "fr": "Projets multiples – Demande de priorisation",
+        "en": "Multiple projects – Prioritization request"
+      },
+      "body": {
+        "fr": "Bonjour,\n\nNous avons reçu plusieurs projets de votre part :\n• Projet <<NuméroProjet1>>\n• Projet <<NuméroProjet2>>\n• Projet <<NuméroProjet3>>\n\nPour optimiser notre planification et respecter vos échéances, pourriez-vous nous indiquer l'ordre de priorité souhaité pour ces projets?\n\nCela nous permettra d'allouer nos ressources de manière à mieux répondre à vos besoins urgents.\n\nNous procéderons selon vos indications dès réception de votre réponse.\n\nBien cordialement,",
+        "en": "Hello,\n\nWe have received several projects from you:\n• Project <<NuméroProjet1>>\n• Project <<NuméroProjet2>>\n• Project <<NuméroProjet3>>\n\nTo optimize our planning and meet your deadlines, could you indicate the desired priority order for these projects?\n\nThis will allow us to allocate our resources to better meet your urgent needs.\n\nWe will proceed according to your instructions upon receipt of your response.\n\nBest regards,"
+      },
+      "variables": ["NuméroProjet1", "NuméroProjet2", "NuméroProjet3"]
+    }
+  ]
+}
+
