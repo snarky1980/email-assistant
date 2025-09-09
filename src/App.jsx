@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { loadState, saveState } from '@/utils/storage';
 import { Search, FileText, Copy, RotateCcw, Languages, Filter, Globe, Sparkles, Mail, Edit3 } from 'lucide-react'
 import { Button } from '@/components/ui/button.jsx'
@@ -29,8 +29,9 @@ function App() {
   const [finalBody, setFinalBody] = useState('') // Version finale éditable
   const [variables, setVariables] = useState(savedState.variables || {})
   const [copySuccess, setCopySuccess] = useState(false)
-
-  const searchRef = useRef(null);
+  
+  // 🎯 RÉFÉRENCES POUR LES RACCOURCIS CLAVIER
+  const searchRef = useRef(null) // Référence pour focus sur la recherche (Ctrl+J)
 
   // Sauvegarder automatiquement les préférences importantes
   useEffect(() => {
@@ -46,42 +47,46 @@ function App() {
   // Textes de l'interface selon la langue
   const interfaceTexts = {
     fr: {
-      title: "Assistant pour rédaction de courriels aux clients",
-      subtitle: "Bureau de la traduction",
-      searchPlaceholder: "🔍 Rechercher un modèle...",
-      allCategories: "Toutes les catégories",
-      selectTemplate: "Sélectionnez un modèle",
-      templateLanguage: "Langue du modèle",
-      interfaceLanguage: "Langue de l'interface",
-      variables: "Variables",
-      subject: "Objet",
-      body: "Corps du message",
-      emailContent: "Contenu de l'email",
-      editableVersion: "✏️ Éditez votre email",
-      copy: "Copier",
-      reset: "Réinitialiser",
-      copied: "✅ Email copié !",
-      noTemplate: "Sélectionnez un modèle pour commencer",
-      templatesCount: "modèles disponibles"
+      title: 'Assistant pour rédaction de courriels aux clients',
+      subtitle: 'Bureau de la traduction',
+      selectTemplate: 'Sélectionnez un modèle',
+      templatesCount: (count) => `${count} modèles disponibles`,
+      searchPlaceholder: '🔍 Rechercher un modèle...',
+      allCategories: 'Toutes les catégories',
+      templateLanguage: 'Langue du modèle:',
+      interfaceLanguage: 'Langue de l\'interface:',
+      variables: 'Variables',
+      editEmail: 'Éditez votre email',
+      subject: 'Objet',
+      body: 'Corps du message',
+      reset: 'Réinitialiser',
+      copy: 'Copier',
+      copySubject: 'Objet',
+      copyBody: 'Corps', 
+      copyAll: 'Tout',
+      copied: 'Copié !',
+      noTemplate: 'Sélectionnez un modèle pour commencer'
     },
     en: {
-      title: "Email Writing Assistant for Clients",
-      subtitle: "Translation Bureau",
-      searchPlaceholder: "🔍 Search for a template...",
-      allCategories: "All categories",
-      selectTemplate: "Select a template",
-      templateLanguage: "Template language",
-      interfaceLanguage: "Interface language",
-      variables: "Variables",
-      subject: "Subject",
-      body: "Message body",
-      emailContent: "Email content",
-      editableVersion: "✏️ Edit your email",
-      copy: "Copy",
-      reset: "Reset",
-      copied: "✅ Email copied!",
-      noTemplate: "Select a template to get started",
-      templatesCount: "templates available"
+      title: 'Email Writing Assistant for Clients',
+      subtitle: 'Translation Bureau',
+      selectTemplate: 'Select a template',
+      templatesCount: (count) => `${count} templates available`,
+      searchPlaceholder: '🔍 Search for a template...',
+      allCategories: 'All categories',
+      templateLanguage: 'Template language:',
+      interfaceLanguage: 'Interface language:',
+      variables: 'Variables',
+      editEmail: 'Edit your email',
+      subject: 'Subject',
+      body: 'Message body',
+      reset: 'Reset',
+      copy: 'Copy',
+      copySubject: 'Subject',
+      copyBody: 'Body',
+      copyAll: 'All',
+      copied: 'Copied!',
+      noTemplate: 'Select a template to get started'
     }
   }
 
@@ -106,6 +111,83 @@ function App() {
     
     loadTemplatesData()
   }, [])
+
+  /**
+   * 🔗 SUPPORT DES PARAMÈTRES URL POUR PARTAGE DE LIENS PROFONDS
+   * 
+   * Permet de partager des liens directs vers un template spécifique :
+   * - ?id=devis_avec_approbation : Pré-sélectionne ce template
+   * - &lang=en : Force la langue anglaise
+   * 
+   * Exemple d'URL complète :
+   * https://monsite.com/email-assistant/?id=devis_avec_approbation&lang=en
+   * 
+   * UX: Idéal pour partager des liens dans Teams/Slack vers un template précis
+   */
+  useEffect(() => {
+    if (!templatesData) return
+    
+    // 📖 Lire les paramètres de l'URL actuelle
+    const params = new URLSearchParams(window.location.search)
+    const templateId = params.get('id')
+    const langParam = params.get('lang')
+    
+    // 🌐 Appliquer la langue depuis l'URL si spécifiée et valide
+    if (langParam && ['fr', 'en'].includes(langParam)) {
+      setTemplateLanguage(langParam)
+      setInterfaceLanguage(langParam)
+    }
+    
+    // 🎯 Pré-sélectionner le template depuis l'URL
+    if (templateId) {
+      const template = templatesData.templates.find(t => t.id === templateId)
+      if (template) {
+        setSelectedTemplate(template)
+      }
+    }
+  }, [templatesData]) // Se déclenche quand les templates sont chargés
+
+  /**
+   * ⌨️ RACCOURCIS CLAVIER POUR UNE UX PROFESSIONNELLE
+   * 
+   * Raccourcis inspirés des logiciels professionnels pour une utilisation rapide :
+   * - Ctrl/Cmd + Enter : Copier tout l'email (action principale)
+   * - Ctrl/Cmd + B : Copier le corps seulement (Body)
+   * - Ctrl/Cmd + J : Focus sur la recherche (Jump to search)
+   * 
+   * Compatible Mac (Cmd) et PC (Ctrl) pour une expérience universelle
+   */
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // 🚀 Ctrl/Cmd + Enter : Copier tout (action rapide principale)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault()
+        if (selectedTemplate) {
+          copyToClipboard('all')
+        }
+      }
+      
+      // 📝 Ctrl/Cmd + B : Copier le corps seulement (Body)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+        e.preventDefault()
+        if (selectedTemplate) {
+          copyToClipboard('body')
+        }
+      }
+      
+      // 🔍 Ctrl/Cmd + J : Focus sur la recherche (Jump to search)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'j') {
+        e.preventDefault()
+        if (searchRef.current) {
+          searchRef.current.focus()
+        }
+      }
+    }
+
+    // 🎯 Attacher les événements clavier globalement
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [selectedTemplate]) // Re-bind quand le template change
 
   // Filtrer les modèles selon la recherche et la catégorie
   const filteredTemplates = useMemo(() => {
@@ -175,17 +257,42 @@ function App() {
     }
   }, [variables, selectedTemplate, templateLanguage])
 
-  // Copier le contenu dans le presse-papiers
-  const copyToClipboard = async () => {
-    const fullEmail = `${finalSubject}\n\n${finalBody}`
+  /**
+   * 📋 FONCTION DE COPIE GRANULAIRE
+   * Permet de copier différentes parties de l'email selon le besoin de l'utilisateur
+   * 
+   * @param {string} type - Type de contenu à copier ('subject', 'body', 'all')
+   * 
+   * UX: Chaque type de copie a son propre bouton avec des couleurs distinctives
+   * - Objet (bleu) : Pour coller uniquement dans le champ "Subject" d'Outlook/Teams
+   * - Corps (vert) : Pour coller le contenu principal sans l'objet
+   * - Tout (gradient) : Copie complète avec objet + corps (comportement original)
+   */
+  const copyToClipboard = async (type = 'all') => {
+    let content = ''
+    
+    // 🎯 Sélection du contenu selon le type demandé
+    switch (type) {
+      case 'subject':
+        content = finalSubject
+        break
+      case 'body':
+        content = finalBody
+        break
+      case 'all':
+      default:
+        content = `${finalSubject}\n\n${finalBody}`
+        break
+    }
     
     try {
+      // 🔒 Méthode moderne et sécurisée (HTTPS requis)
       if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(fullEmail)
+        await navigator.clipboard.writeText(content)
       } else {
-        // Fallback pour les navigateurs plus anciens ou contextes non sécurisés
+        // 🔄 Fallback pour navigateurs anciens ou contextes non-sécurisés
         const textArea = document.createElement('textarea')
-        textArea.value = fullEmail
+        textArea.value = content
         textArea.style.position = 'fixed'
         textArea.style.left = '-999999px'
         textArea.style.top = '-999999px'
@@ -196,11 +303,12 @@ function App() {
         textArea.remove()
       }
       
+      // ✅ Feedback visuel de succès (2 secondes)
       setCopySuccess(true)
-      setTimeout(() => setCopySuccess(false), 3000)
+      setTimeout(() => setCopySuccess(false), 2000)
     } catch (error) {
       console.error('Erreur lors de la copie:', error)
-      // Afficher un message d'erreur à l'utilisateur
+      // 🚨 Gestion d'erreur avec message utilisateur
       alert('Erreur lors de la copie. Veuillez sélectionner le texte manuellement et utiliser Ctrl+C.')
     }
   }
@@ -297,13 +405,15 @@ function App() {
                 
                 {/* Recherche avec style moderne */}
                 <div className="relative group">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
-                  <Input
-                    placeholder={t.searchPlaceholder}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 border-2 border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-300"
-                  />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-orange-500 transition-colors" />
+                    <Input
+                      ref={searchRef}
+                      type="text"
+                      placeholder={t.searchPlaceholder}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10 border-2 border-orange-200 focus:border-orange-400 focus:ring-4 focus:ring-orange-100 transition-all duration-300"
+                    />
                 </div>
 
                 {/* Filtre par catégorie avec style */}
@@ -479,17 +589,53 @@ function App() {
                     <RotateCcw className="h-4 w-4 mr-2" />
                     {t.reset}
                   </Button>
-                  <Button 
-                    onClick={copyToClipboard} 
-                    className={`font-bold text-lg px-8 py-3 transition-all duration-300 ${
-                      copySuccess 
-                        ? 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 transform scale-105' 
-                        : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 hover:scale-105'
-                    } shadow-lg`}
-                  >
-                    <Copy className="h-5 w-5 mr-2" />
-                    {copySuccess ? t.copied : t.copy}
-                  </Button>
+                  
+                  {/* 
+                    🎨 BOUTONS DE COPIE GRANULAIRE - UX AMÉLIORÉE
+                    
+                    Design pensé pour l'efficacité :
+                    - 3 boutons distincts avec codes couleur intuitifs
+                    - Tooltips explicatifs avec raccourcis clavier
+                    - Animations hover pour feedback visuel
+                    - Groupement logique (outline + principal)
+                  */}
+                  <div className="flex space-x-2">
+                    {/* 📧 Bouton Copie Objet - Bleu (associé aux emails) */}
+                    <Button 
+                      onClick={() => copyToClipboard('subject')} 
+                      variant="outline"
+                      className="font-medium px-4 py-2 border-2 border-blue-300 hover:border-blue-500 hover:bg-blue-50 transition-all duration-300 group"
+                      title="Copier l'objet seulement (Ctrl+J)"
+                    >
+                      <Mail className="h-4 w-4 mr-2 group-hover:text-blue-600" />
+                      {t.copySubject || 'Objet'}
+                    </Button>
+                    
+                    {/* 📝 Bouton Copie Corps - Vert (associé au contenu) */}
+                    <Button 
+                      onClick={() => copyToClipboard('body')} 
+                      variant="outline"
+                      className="font-medium px-4 py-2 border-2 border-green-300 hover:border-green-500 hover:bg-green-50 transition-all duration-300 group"
+                      title="Copier le corps seulement (Ctrl+B)"
+                    >
+                      <Edit3 className="h-4 w-4 mr-2 group-hover:text-green-600" />
+                      {t.copyBody || 'Corps'}
+                    </Button>
+                    
+                    {/* 🚀 Bouton Copie Complète - Gradient (action principale) */}
+                    <Button 
+                      onClick={() => copyToClipboard('all')} 
+                      className={`font-bold px-6 py-3 transition-all duration-300 shadow-lg ${
+                        copySuccess 
+                          ? 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 transform scale-105' 
+                          : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 hover:scale-105'
+                      }`}
+                      title="Copier tout l'email (Ctrl+Enter)"
+                    >
+                      <Copy className="h-5 w-5 mr-2" />
+                      {copySuccess ? t.copied : (t.copyAll || 'Tout')}
+                    </Button>
+                  </div>
                 </div>
               </>
             ) : (
