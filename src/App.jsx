@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
+import { loadState, saveState } from '@/utils/storage';
 import { Search, FileText, Copy, RotateCcw, Languages, Filter, Globe, Sparkles, Mail, Edit3 } from 'lucide-react'
 import { Button } from '@/components/ui/button.jsx'
 import { Input } from '@/components/ui/input.jsx'
@@ -25,6 +26,8 @@ function App() {
   const [finalBody, setFinalBody] = useState('') // Version finale éditable
   const [variables, setVariables] = useState({})
   const [copySuccess, setCopySuccess] = useState(false)
+
+  const searchRef = useRef(null);
 
   // Textes de l'interface selon la langue
   const interfaceTexts = {
