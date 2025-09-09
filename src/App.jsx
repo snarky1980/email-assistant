@@ -77,15 +77,20 @@ function App() {
   useEffect(() => {
     const loadTemplatesData = async () => {
       try {
+        console.log('Tentative de chargement des templates...')
         const response = await fetch('/email-assistant/complete_email_templates.json')
+        console.log('Response status:', response.status, 'ok:', response.ok)
         if (!response.ok) {
           throw new Error('Failed to load templates data')
         }
         const data = await response.json()
+        console.log('Templates chargés:', data.metadata)
+        console.log('Nombre de templates:', data.templates.length)
         setTemplatesData(data)
       } catch (error) {
         console.error('Error loading templates data:', error)
       } finally {
+        console.log('Fin du chargement, setLoading(false)')
         setLoading(false)
       }
     }
@@ -111,7 +116,7 @@ function App() {
     }
 
     return filtered
-  }, [searchQuery, selectedCategory, templateLanguage])
+  }, [templatesData, searchQuery, selectedCategory, templateLanguage])
 
   // Obtenir les catégories uniques
   const categories = useMemo(() => {
