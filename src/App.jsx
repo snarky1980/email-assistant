@@ -12,22 +12,36 @@ import { ScrollArea } from '@/components/ui/scroll-area.jsx'
 import './App.css'
 
 function App() {
+  // Charger l'état sauvegardé
+  const savedState = loadState()
+  
   // État pour les données des templates
   const [templatesData, setTemplatesData] = useState(null)
   const [loading, setLoading] = useState(true)
   
   // Séparer la langue de l'interface de la langue des modèles
-  const [interfaceLanguage, setInterfaceLanguage] = useState('fr') // Langue de l'interface
-  const [templateLanguage, setTemplateLanguage] = useState('fr')   // Langue des modèles
+  const [interfaceLanguage, setInterfaceLanguage] = useState(savedState.interfaceLanguage || 'fr') // Langue de l'interface
+  const [templateLanguage, setTemplateLanguage] = useState(savedState.templateLanguage || 'fr')   // Langue des modèles
   const [selectedTemplate, setSelectedTemplate] = useState(null)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('all')
+  const [searchQuery, setSearchQuery] = useState(savedState.searchQuery || '')
+  const [selectedCategory, setSelectedCategory] = useState(savedState.selectedCategory || 'all')
   const [finalSubject, setFinalSubject] = useState('') // Version finale éditable
   const [finalBody, setFinalBody] = useState('') // Version finale éditable
-  const [variables, setVariables] = useState({})
+  const [variables, setVariables] = useState(savedState.variables || {})
   const [copySuccess, setCopySuccess] = useState(false)
 
   const searchRef = useRef(null);
+
+  // Sauvegarder automatiquement les préférences importantes
+  useEffect(() => {
+    saveState({
+      interfaceLanguage,
+      templateLanguage,
+      searchQuery,
+      selectedCategory,
+      variables
+    })
+  }, [interfaceLanguage, templateLanguage, searchQuery, selectedCategory, variables])
 
   // Textes de l'interface selon la langue
   const interfaceTexts = {
@@ -77,20 +91,15 @@ function App() {
   useEffect(() => {
     const loadTemplatesData = async () => {
       try {
-        console.log('Tentative de chargement des templates...')
         const response = await fetch('/email-assistant/complete_email_templates.json')
-        console.log('Response status:', response.status, 'ok:', response.ok)
         if (!response.ok) {
           throw new Error('Failed to load templates data')
         }
         const data = await response.json()
-        console.log('Templates chargés:', data.metadata)
-        console.log('Nombre de templates:', data.templates.length)
         setTemplatesData(data)
       } catch (error) {
         console.error('Error loading templates data:', error)
       } finally {
-        console.log('Fin du chargement, setLoading(false)')
         setLoading(false)
       }
     }
@@ -167,13 +176,33 @@ function App() {
   }, [variables, selectedTemplate, templateLanguage])
 
   // Copier le contenu dans le presse-papiers
-  const copyToClipboard = () => {
+  const copyToClipboard = async () => {
     const fullEmail = `${finalSubject}\n\n${finalBody}`
     
-    navigator.clipboard.writeText(fullEmail).then(() => {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(fullEmail)
+      } else {
+        // Fallback pour les navigateurs plus anciens ou contextes non sécurisés
+        const textArea = document.createElement('textarea')
+        textArea.value = fullEmail
+        textArea.style.position = 'fixed'
+        textArea.style.left = '-999999px'
+        textArea.style.top = '-999999px'
+        document.body.appendChild(textArea)
+        textArea.focus()
+        textArea.select()
+        document.execCommand('copy')
+        textArea.remove()
+      }
+      
       setCopySuccess(true)
-      setTimeout(() => setCopySuccess(false), 2000)
-    })
+      setTimeout(() => setCopySuccess(false), 3000)
+    } catch (error) {
+      console.error('Erreur lors de la copie:', error)
+      // Afficher un message d'erreur à l'utilisateur
+      alert('Erreur lors de la copie. Veuillez sélectionner le texte manuellement et utiliser Ctrl+C.')
+    }
   }
 
   // Réinitialiser le formulaire
