@@ -96,7 +96,7 @@ function App() {
   useEffect(() => {
     const loadTemplatesData = async () => {
       try {
-        const response = await fetch('/email-assistant/complete_email_templates.json')
+        const response = await fetch('/complete_email_templates.json')
         if (!response.ok) {
           throw new Error('Failed to load templates data')
         }

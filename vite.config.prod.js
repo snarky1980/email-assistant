@@ -5,7 +5,7 @@ import path from 'path'
 
 // Configuration Vite pour la production
 export default defineConfig({
-  base: '/email-assistant/',
+  base: '/', // Changé de '/email-assistant/' à '/' pour le déploiement
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
