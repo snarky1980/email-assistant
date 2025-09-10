@@ -110,8 +110,7 @@ function App() {
   useEffect(() => {
     const loadTemplatesData = async () => {
       try {
-        const response = await fetch('/email-assistant/complete_email_templates.json')
-        if (!response.ok) {
+        const response = await fetch('./complete_email_templates.json');        if (!response.ok) {
           throw new Error('Failed to load templates data')
         }
         const data = await response.json()
@@ -796,8 +795,11 @@ function App() {
                         </h4>
                         
                         {/* Aperçu objet */}
-                        <div className="mb-4">
-                          <div className="text-xs font-semibold text-blue-700 mb-1">OBJET:</div>
+                        <div>
+                          <div className="text-xs font-medium text-gray-600 mb-1 flex items-center">
+                            <span className="w-1 h-1 bg-green-500 rounded-full mr-1.5"></span>
+                            OBJET:
+                          </div>
                           <div className="bg-white p-3 rounded border text-sm leading-relaxed">
                             {highlightVariables(selectedTemplate.subject[templateLanguage] || '')}
                           </div>
@@ -805,7 +807,10 @@ function App() {
                         
                         {/* Aperçu corps */}
                         <div>
-                          <div className="text-xs font-semibold text-blue-700 mb-1">CORPS:</div>
+                          <div className="text-xs font-medium text-gray-600 mb-1 flex items-center">
+                            <span className="w-1 h-1 bg-green-500 rounded-full mr-1.5"></span>
+                            CORPS:
+                          </div>
                           <div className="bg-white p-3 rounded border text-sm leading-relaxed max-h-32 overflow-y-auto">
                             {highlightVariables(selectedTemplate.body[templateLanguage] || '')}
                           </div>

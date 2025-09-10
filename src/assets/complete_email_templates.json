@@ -52,6 +52,22 @@
       "format": "number",
       "example": "2250"
     },
+    "DateLivraison": {
+      "description": {
+        "fr": "Date de livraison prévue",
+        "en": "Expected delivery date"
+      },
+      "format": "date",
+      "example": "2024-03-15"
+    },
+    "HeureLivraison": {
+      "description": {
+        "fr": "Heure de livraison prévue",
+        "en": "Expected delivery time"
+      },
+      "format": "time",
+      "example": "14:30"
+    },
     "Heure": {
       "description": {
         "fr": "Heure du nouveau délai",
