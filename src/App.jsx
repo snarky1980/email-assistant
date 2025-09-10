@@ -110,7 +110,7 @@ function App() {
   useEffect(() => {
     const loadTemplatesData = async () => {
       try {
-        const response = await fetch('/complete_email_templates.json')
+        const response = await fetch('/email-assistant/complete_email_templates.json')
         if (!response.ok) {
           throw new Error('Failed to load templates data')
         }
@@ -238,6 +238,60 @@ function App() {
       result = result.replace(regex, value || `<<${varName}>>`)
     })
     return result
+  }
+
+  /**
+   * 🎨 SURBRILLANCE DES VARIABLES DANS LE TEXTE
+   * 
+   * Convertit le texte avec variables en JSX avec surbrillance colorée
+   * - Variables remplies : fond vert clair
+   * - Variables vides : fond orange clair avec bordure
+   * - Couleurs distinctes pour faciliter l'identification
+   */
+  const highlightVariables = (text) => {
+    if (!text) return text
+    
+    // Couleurs pour différents types de variables
+    const getVariableColor = (varName) => {
+      const varInfo = templatesData?.variables?.[varName]
+      if (!varInfo) return 'bg-gray-100 text-gray-700'
+      
+      switch (varInfo.type) {
+        case 'email': return 'bg-blue-100 text-blue-800 border-blue-300'
+        case 'phone': return 'bg-green-100 text-green-800 border-green-300'
+        case 'date': return 'bg-purple-100 text-purple-800 border-purple-300'
+        case 'number': return 'bg-orange-100 text-orange-800 border-orange-300'
+        default: return 'bg-indigo-100 text-indigo-800 border-indigo-300'
+      }
+    }
+    
+    // Diviser le texte en parties et identifier les variables
+    const parts = text.split(/(<<[^>]+>>)/g)
+    
+    return parts.map((part, index) => {
+      const variableMatch = part.match(/^<<([^>]+)>>$/)
+      
+      if (variableMatch) {
+        const varName = variableMatch[1]
+        const value = variables[varName]
+        const colorClass = getVariableColor(varName)
+        const isEmpty = !value || value.trim() === ''
+        
+        return (
+          <span
+            key={index}
+            className={`inline-block px-2 py-1 rounded-md text-sm font-semibold border-2 transition-all duration-300 ${colorClass} ${
+              isEmpty ? 'animate-pulse border-dashed' : 'border-solid'
+            }`}
+            title={`Variable: ${varName}${isEmpty ? ' (vide)' : ` = ${value}`}`}
+          >
+            {value || `<<${varName}>>`}
+          </span>
+        )
+      }
+      
+      return part
+    })
   }
 
   // Charger un modèle sélectionné
@@ -525,27 +579,108 @@ function App() {
                         {t.variables}
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <CardContent className="p-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {selectedTemplate.variables.map((varName) => {
                           const varInfo = templatesData.variables[varName]
                           if (!varInfo) return null
                           
+                          const currentValue = variables[varName] || ''
+                          const isEmpty = !currentValue.trim()
+                          
+                          // Validation en temps réel
+                          const getValidationStatus = () => {
+                            if (isEmpty) return { valid: false, message: 'Requis' }
+                            
+                            switch (varInfo.type) {
+                              case 'email':
+                                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+                                return emailRegex.test(currentValue) 
+                                  ? { valid: true, message: 'Valide' }
+                                  : { valid: false, message: 'Format invalide' }
+                              
+                              case 'phone':
+                                const phoneRegex = /^[\d\s\-\+\(\)]{10,}$/
+                                return phoneRegex.test(currentValue)
+                                  ? { valid: true, message: 'Valide' }
+                                  : { valid: false, message: 'Format invalide' }
+                              
+                              case 'number':
+                                const isNumber = !isNaN(parseFloat(currentValue))
+                                return isNumber
+                                  ? { valid: true, message: 'Valide' }
+                                  : { valid: false, message: 'Nombre requis' }
+                              
+                              default:
+                                return { valid: true, message: 'OK' }
+                            }
+                          }
+                          
+                          const validation = getValidationStatus()
+                          
+                          // Couleur selon le type de variable
+                          const getTypeColor = () => {
+                            switch (varInfo.type) {
+                              case 'email': return 'border-blue-300 focus:border-blue-500'
+                              case 'phone': return 'border-green-300 focus:border-green-500'
+                              case 'date': return 'border-purple-300 focus:border-purple-500'
+                              case 'number': return 'border-orange-300 focus:border-orange-500'
+                              default: return 'border-gray-300 focus:border-gray-500'
+                            }
+                          }
+                          
                           return (
-                            <div key={varName} className="space-y-2">
-                              <label className="text-sm font-bold text-gray-700 flex items-center">
-                                <span className="w-2 h-2 bg-orange-400 rounded-full mr-2"></span>
-                                {varInfo.description[interfaceLanguage]}
-                              </label>
+                            <div key={varName} className="bg-white rounded-md p-3 border border-gray-200 hover:border-orange-300 transition-all duration-200">
+                              {/* En-tête compact */}
+                              <div className="flex items-center justify-between mb-2">
+                                <label className="text-xs font-semibold text-gray-700 flex items-center">
+                                  <span className={`w-2 h-2 rounded-full mr-1.5 ${
+                                    varInfo.type === 'email' ? 'bg-blue-400' :
+                                    varInfo.type === 'phone' ? 'bg-green-400' :
+                                    varInfo.type === 'date' ? 'bg-purple-400' :
+                                    varInfo.type === 'number' ? 'bg-orange-400' :
+                                    'bg-gray-400'
+                                  }`}></span>
+                                  {varInfo.description[interfaceLanguage]}
+                                </label>
+                                
+                                {/* Badge du type compact */}
+                                <Badge variant="outline" className="text-xs px-1 py-0 h-4">
+                                  {varInfo.type}
+                                </Badge>
+                              </div>
+                              
+                              {/* Champ de saisie compact */}
                               <Input
-                                value={variables[varName] || ''}
+                                value={currentValue}
                                 onChange={(e) => setVariables(prev => ({
                                   ...prev,
                                   [varName]: e.target.value
                                 }))}
                                 placeholder={varInfo.example}
-                                className="border-2 border-orange-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all duration-300"
+                                className={`text-sm h-8 border transition-all duration-200 ${getTypeColor()} ${
+                                  !validation.valid && !isEmpty ? 'border-red-300 focus:border-red-500' : ''
+                                }`}
                               />
+                              
+                              {/* Indicateur de validation compact */}
+                              <div className="flex items-center justify-between mt-1">
+                                <div className={`text-xs flex items-center ${
+                                  validation.valid ? 'text-green-600' : 'text-red-600'
+                                }`}>
+                                  <span className={`w-1.5 h-1.5 rounded-full mr-1 ${
+                                    validation.valid ? 'bg-green-400' : 'bg-red-400'
+                                  }`}></span>
+                                  {validation.message}
+                                </div>
+                                
+                                {/* Compteur de caractères compact */}
+                                {varInfo.type === 'text' && currentValue.length > 0 && (
+                                  <span className="text-xs text-gray-400">
+                                    {currentValue.length}
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           )
                         })}
@@ -563,6 +698,32 @@ function App() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-6 space-y-6">
+                    {/* Aperçu avec surbrillance des variables */}
+                    {selectedTemplate && (
+                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border-2 border-blue-200">
+                        <h4 className="text-sm font-bold text-blue-800 mb-3 flex items-center">
+                          <Sparkles className="h-4 w-4 mr-2" />
+                          Aperçu avec variables surlignées
+                        </h4>
+                        
+                        {/* Aperçu objet */}
+                        <div className="mb-4">
+                          <div className="text-xs font-semibold text-blue-700 mb-1">OBJET:</div>
+                          <div className="bg-white p-3 rounded border text-sm leading-relaxed">
+                            {highlightVariables(selectedTemplate.subject[templateLanguage] || '')}
+                          </div>
+                        </div>
+                        
+                        {/* Aperçu corps */}
+                        <div>
+                          <div className="text-xs font-semibold text-blue-700 mb-1">CORPS:</div>
+                          <div className="bg-white p-3 rounded border text-sm leading-relaxed max-h-32 overflow-y-auto">
+                            {highlightVariables(selectedTemplate.body[templateLanguage] || '')}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Objet éditable */}
                     <div className="space-y-3">
                       <label className="text-lg font-bold text-gray-700 flex items-center">
