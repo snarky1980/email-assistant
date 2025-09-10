@@ -50,20 +50,27 @@ function App() {
       title: 'Assistant pour rédaction de courriels aux clients',
       subtitle: 'Bureau de la traduction',
       selectTemplate: 'Sélectionnez un modèle',
-      templatesCount: (count) => `${count} modèles disponibles`,
+      templatesCount: `modèles disponibles`,
       searchPlaceholder: '🔍 Rechercher un modèle...',
       allCategories: 'Toutes les catégories',
+      categories: {
+        'Devis et estimations': 'Devis et estimations',
+        'Gestion de projets': 'Gestion de projets', 
+        'Problèmes techniques': 'Problèmes techniques',
+        'Communications générales': 'Communications générales',
+        'Services spécialisés': 'Services spécialisés'
+      },
       templateLanguage: 'Langue du modèle:',
       interfaceLanguage: 'Langue de l\'interface:',
       variables: 'Variables',
-      editEmail: 'Éditez votre email',
+      editEmail: 'Éditez votre courriel',
       subject: 'Objet',
       body: 'Corps du message',
       reset: 'Réinitialiser',
       copy: 'Copier',
-      copySubject: 'Objet',
-      copyBody: 'Corps', 
-      copyAll: 'Tout',
+      copySubject: 'Copier Objet',
+      copyBody: 'Copier Corps', 
+      copyAll: 'Copier Tout',
       copied: 'Copié !',
       noTemplate: 'Sélectionnez un modèle pour commencer'
     },
@@ -71,9 +78,16 @@ function App() {
       title: 'Email Writing Assistant for Clients',
       subtitle: 'Translation Bureau',
       selectTemplate: 'Select a template',
-      templatesCount: (count) => `${count} templates available`,
+      templatesCount: `templates available`,
       searchPlaceholder: '🔍 Search for a template...',
       allCategories: 'All categories',
+      categories: {
+        'Devis et estimations': 'Quotes and estimates',
+        'Gestion de projets': 'Project management', 
+        'Problèmes techniques': 'Technical issues',
+        'Communications générales': 'General communications',
+        'Services spécialisés': 'Specialized services'
+      },
       templateLanguage: 'Template language:',
       interfaceLanguage: 'Interface language:',
       variables: 'Variables',
@@ -82,9 +96,9 @@ function App() {
       body: 'Message body',
       reset: 'Reset',
       copy: 'Copy',
-      copySubject: 'Subject',
-      copyBody: 'Body',
-      copyAll: 'All',
+      copySubject: 'Copy Subject',
+      copyBody: 'Copy Body',
+      copyAll: 'Copy All',
       copied: 'Copied!',
       noTemplate: 'Select a template to get started'
     }
@@ -426,7 +440,7 @@ function App() {
                     <SelectItem value="all">{t.allCategories}</SelectItem>
                     {categories.map(category => (
                       <SelectItem key={category} value={category}>
-                        {category}
+                        {t.categories[category] || category}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -545,7 +559,7 @@ function App() {
                   <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50">
                     <CardTitle className="text-2xl font-bold text-gray-800 flex items-center">
                       <Mail className="h-7 w-7 mr-3 text-green-600" />
-                      {t.editableVersion}
+                      {t.editEmail}
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-6 space-y-6">
