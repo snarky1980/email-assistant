@@ -471,19 +471,6 @@ function App() {
                 </CardTitle>
                 <p className="text-sm text-gray-600">{filteredTemplates.length} {t.templatesCount}</p>
                 
-                {/* Recherche avec style moderne */}
-                <div className="relative group">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-orange-500 transition-colors" />
-                    <Input
-                      ref={searchRef}
-                      type="text"
-                      placeholder={t.searchPlaceholder}
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 border-2 border-orange-200 focus:border-orange-400 focus:ring-4 focus:ring-orange-100 transition-all duration-300"
-                    />
-                </div>
-
                 {/* Filtre par catégorie avec style */}
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                   <SelectTrigger className="border-2 border-gray-200 focus:border-purple-400 transition-all duration-300">
@@ -499,6 +486,19 @@ function App() {
                     ))}
                   </SelectContent>
                 </Select>
+
+                {/* Recherche avec style moderne */}
+                <div className="relative group">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-orange-500 transition-colors" />
+                    <Input
+                      ref={searchRef}
+                      type="text"
+                      placeholder={t.searchPlaceholder}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10 border-2 border-orange-200 focus:border-orange-400 focus:ring-4 focus:ring-orange-100 transition-all duration-300"
+                    />
+                </div>
 
                 {/* Langue des modèles avec style moderne */}
                 <div className="flex items-center space-x-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-3">

@@ -24,7 +24,7 @@ export default defineConfig({
     // En définissant strictPort à false, Vite passera à un port
     // disponible (par exemple 5175) si 5174 est déjà utilisé.
     strictPort: false,
-    allowedHosts: 'all',
+    allowedHosts: ['all', '5174-i368787dyvmhm5wx7wcdx-6ecd0654.manusvm.computer'],
   },
   // Spécifier un port différent pour l'aperçu de production
   preview: {
