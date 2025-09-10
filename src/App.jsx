@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { loadState, saveState } from '@/utils/storage';
-import { Search, FileText, Copy, RotateCcw, Languages, Filter, Globe, Sparkles, Mail, Edit3 } from 'lucide-react'
+import { Search, FileText, Copy, RotateCcw, Languages, Filter, Globe, Sparkles, Mail, Edit3, Link } from 'lucide-react'
 import { Button } from '@/components/ui/button.jsx'
 import { Input } from '@/components/ui/input.jsx'
 import { Textarea } from '@/components/ui/textarea.jsx'
@@ -381,6 +381,51 @@ function App() {
     }
   }
 
+  /**
+   * 🔗 FONCTION DE COPIE DE LIEN DIRECT
+   * Génère et copie l'URL complète pour accéder directement à ce template
+   * 
+   * Format: https://[domaine]/email-assistant/?id=[template_id]&lang=[langue]
+   * 
+   * UX: Permet aux CC de partager facilement des liens directs vers des templates spécifiques
+   * - Génération automatique de l'URL complète
+   * - Inclut l'ID du template et la langue actuelle
+   * - Feedback visuel de succès
+   */
+  const copyTemplateLink = async () => {
+    if (!selectedTemplate) return
+    
+    // 🌐 Construire l'URL complète avec paramètres
+    const currentUrl = window.location.origin + window.location.pathname
+    const templateUrl = `${currentUrl}?id=${selectedTemplate.id}&lang=${templateLanguage}`
+    
+    try {
+      // 📋 Copier l'URL dans le presse-papiers
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(templateUrl)
+      } else {
+        // 🔄 Fallback pour navigateurs anciens
+        const textArea = document.createElement('textarea')
+        textArea.value = templateUrl
+        textArea.style.position = 'fixed'
+        textArea.style.left = '-999999px'
+        textArea.style.top = '-999999px'
+        document.body.appendChild(textArea)
+        textArea.focus()
+        textArea.select()
+        document.execCommand('copy')
+        textArea.remove()
+      }
+      
+      // ✅ Feedback visuel temporaire
+      setCopySuccess(true)
+      setTimeout(() => setCopySuccess(false), 2000)
+    } catch (error) {
+      console.error('Erreur lors de la copie du lien:', error)
+      alert('Erreur lors de la copie du lien. Veuillez copier manuellement l\'URL depuis la barre d\'adresse.')
+    }
+  }
+
   // Réinitialiser le formulaire
   const resetForm = () => {
     if (selectedTemplate) {
@@ -755,15 +800,27 @@ function App() {
                 </Card>
 
                 {/* Actions avec style moderne */}
-                <div className="flex justify-end space-x-4">
+                <div className="flex justify-between items-center">
+                  {/* Bouton Copier le lien - Discret à gauche */}
                   <Button 
-                    variant="outline" 
-                    onClick={resetForm}
-                    className="border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-300 font-semibold"
+                    variant="ghost" 
+                    onClick={() => copyTemplateLink()}
+                    className="text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 font-medium text-sm"
+                    title="Copier le lien direct vers ce template"
                   >
-                    <RotateCcw className="h-4 w-4 mr-2" />
-                    {t.reset}
+                    <Link className="h-4 w-4 mr-2" />
+                    Copier le lien
                   </Button>
+                  
+                  <div className="flex space-x-4">
+                    <Button 
+                      variant="outline" 
+                      onClick={resetForm}
+                      className="border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-300 font-semibold"
+                    >
+                      <RotateCcw className="h-4 w-4 mr-2" />
+                      {t.reset}
+                    </Button>
                   
                   {/* 
                     🎨 BOUTONS DE COPIE GRANULAIRE - UX AMÉLIORÉE
@@ -810,6 +867,7 @@ function App() {
                       <Copy className="h-5 w-5 mr-2" />
                       {copySuccess ? t.copied : (t.copyAll || 'Tout')}
                     </Button>
+                  </div>
                   </div>
                 </div>
               </>
