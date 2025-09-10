@@ -564,7 +564,7 @@ function App() {
                   </SelectContent>
                 </Select>
 
-                {/* Recherche avec style moderne */}
+                {/* Recherche avec bouton d'effacement */}
                 <div className="relative group">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-orange-500 transition-colors" />
                     <Input
@@ -573,8 +573,20 @@ function App() {
                       placeholder={t.searchPlaceholder}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 border-2 border-orange-200 focus:border-orange-400 focus:ring-4 focus:ring-orange-100 transition-all duration-300"
+                      className="pl-10 pr-10 border-2 border-orange-200 focus:border-orange-400 focus:ring-4 focus:ring-orange-100 transition-all duration-300"
                     />
+                    {/* Bouton X pour effacer la recherche */}
+                    {searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery('')}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 hover:text-gray-600 transition-colors"
+                        title="Effacer la recherche"
+                      >
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    )}
                 </div>
 
                 {/* Langue des modèles avec style moderne */}
@@ -801,16 +813,16 @@ function App() {
                       </div>
                     )}
 
-                    {/* Objet éditable */}
-                    <div className="space-y-3">
-                      <label className="text-lg font-bold text-gray-700 flex items-center">
-                        <span className="w-3 h-3 bg-green-500 rounded-full mr-2 animate-pulse"></span>
+                    {/* Objet éditable - Version compacte */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700 flex items-center">
+                        <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
                         {t.subject}
                       </label>
                       <Textarea
                         value={finalSubject}
                         onChange={(e) => setFinalSubject(e.target.value)}
-                        className="min-h-[60px] resize-none border-3 border-green-300 focus:border-green-500 focus:ring-4 focus:ring-green-100 transition-all duration-300 text-lg font-medium"
+                        className="min-h-[45px] max-h-[80px] resize-none border-2 border-green-300 focus:border-green-500 focus:ring-2 focus:ring-green-100 transition-all duration-300 text-sm font-medium"
                         placeholder={t.subject}
                       />
                     </div>
