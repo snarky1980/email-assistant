@@ -248,48 +248,80 @@ function App() {
    * - Variables vides : fond orange clair avec bordure
    * - Couleurs distinctes pour faciliter l'identification
    */
+  /**
+   * 🎨 FONCTION DE SURLIGNAGE DES VARIABLES - VERSION DISCRÈTE
+   * 
+   * Applique un surlignage doux et discret aux variables dans le texte
+   * Utilise des couleurs pastel pour une meilleure lisibilité
+   * 
+   * @param {string} text - Texte contenant des variables au format <<variable>>
+   * @returns {JSX.Element[]} - Tableau d'éléments React avec surlignage
+   */
   const highlightVariables = (text) => {
     if (!text) return text
     
-    // Couleurs pour différents types de variables
-    const getVariableColor = (varName) => {
-      const varInfo = templatesData?.variables?.[varName]
-      if (!varInfo) return 'bg-gray-100 text-gray-700'
-      
-      switch (varInfo.type) {
-        case 'email': return 'bg-blue-100 text-blue-800 border-blue-300'
-        case 'phone': return 'bg-green-100 text-green-800 border-green-300'
-        case 'date': return 'bg-purple-100 text-purple-800 border-purple-300'
-        case 'number': return 'bg-orange-100 text-orange-800 border-orange-300'
-        default: return 'bg-indigo-100 text-indigo-800 border-indigo-300'
-      }
+    /**
+     * 🎨 PALETTE DE COULEURS DISCRÈTES
+     * Couleurs pastel pour un rendu professionnel et agréable
+     */
+    const VARIABLE_COLORS = {
+      email: 'bg-blue-50 text-blue-700 border-blue-200',      // Bleu doux pour emails
+      phone: 'bg-green-50 text-green-700 border-green-200',   // Vert doux pour téléphones
+      date: 'bg-purple-50 text-purple-700 border-purple-200', // Violet doux pour dates
+      number: 'bg-amber-50 text-amber-700 border-amber-200',  // Ambre doux pour nombres
+      default: 'bg-indigo-50 text-indigo-700 border-indigo-200', // Indigo par défaut
+      unknown: 'bg-gray-50 text-gray-600 border-gray-200'     // Gris pour variables inconnues
     }
     
-    // Diviser le texte en parties et identifier les variables
-    const parts = text.split(/(<<[^>]+>>)/g)
+    /**
+     * 🎯 STYLES DE BASE POUR LE SURLIGNAGE
+     * Classes Tailwind pour un rendu discret et élégant
+     */
+    const BASE_HIGHLIGHT_CLASSES = 'inline px-1.5 py-0.5 rounded text-xs font-medium border transition-all duration-200'
     
-    return parts.map((part, index) => {
+    // Fonction pour obtenir la couleur selon le type de variable
+    const getVariableColor = (variableName) => {
+      const variableInfo = templatesData?.variables?.[variableName]
+      
+      if (!variableInfo) {
+        return VARIABLE_COLORS.unknown
+      }
+      
+      // Retourner la couleur selon le type, ou la couleur par défaut
+      return VARIABLE_COLORS[variableInfo.type] || VARIABLE_COLORS.default
+    }
+    
+    // Diviser le texte en parties pour identifier les variables (format <<variable>>)
+    const textParts = text.split(/(<<[^>]+>>)/g)
+    
+    return textParts.map((part, index) => {
+      // Vérifier si cette partie est une variable
       const variableMatch = part.match(/^<<([^>]+)>>$/)
       
       if (variableMatch) {
-        const varName = variableMatch[1]
-        const value = variables[varName]
-        const colorClass = getVariableColor(varName)
-        const isEmpty = !value || value.trim() === ''
+        const variableName = variableMatch[1]
+        const variableValue = variables[variableName]
+        const colorClasses = getVariableColor(variableName)
+        const isEmptyValue = !variableValue || variableValue.trim() === ''
+        
+        // Classes pour l'état vide (animation pulse + bordure pointillée)
+        const emptyStateClasses = isEmptyValue ? 'animate-pulse border-dashed' : 'border-solid'
+        
+        // Tooltip informatif
+        const tooltipText = `Variable: ${variableName}${isEmptyValue ? ' (vide)' : ` = ${variableValue}`}`
         
         return (
           <span
             key={index}
-            className={`inline-block px-2 py-1 rounded-md text-sm font-semibold border-2 transition-all duration-300 ${colorClass} ${
-              isEmpty ? 'animate-pulse border-dashed' : 'border-solid'
-            }`}
-            title={`Variable: ${varName}${isEmpty ? ' (vide)' : ` = ${value}`}`}
+            className={`${BASE_HIGHLIGHT_CLASSES} ${colorClasses} ${emptyStateClasses}`}
+            title={tooltipText}
           >
-            {value || `<<${varName}>>`}
+            {variableValue || `<<${variableName}>>`}
           </span>
         )
       }
       
+      // Retourner le texte normal sans modification
       return part
     })
   }
