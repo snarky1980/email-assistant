@@ -813,16 +813,16 @@ function App() {
                       </div>
                     )}
 
-                    {/* Objet éditable - Version compacte */}
-                    <div className="space-y-2">
-                      <label className="text-sm font-semibold text-gray-700 flex items-center">
-                        <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                    {/* Objet éditable - Version ultra-compacte */}
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium text-gray-600 flex items-center">
+                        <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5"></span>
                         {t.subject}
                       </label>
                       <Textarea
                         value={finalSubject}
                         onChange={(e) => setFinalSubject(e.target.value)}
-                        className="min-h-[45px] max-h-[80px] resize-none border-2 border-green-300 focus:border-green-500 focus:ring-2 focus:ring-green-100 transition-all duration-300 text-sm font-medium"
+                        className="min-h-[35px] max-h-[60px] resize-none border border-green-300 focus:border-green-500 focus:ring-1 focus:ring-green-100 transition-all duration-300 text-sm py-2 px-3"
                         placeholder={t.subject}
                       />
                     </div>
