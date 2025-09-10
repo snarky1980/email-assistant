@@ -675,6 +675,27 @@
         "en": "Hello,\n\nWe have received several projects from you:\n• Project <<NuméroProjet1>>\n• Project <<NuméroProjet2>>\n• Project <<NuméroProjet3>>\n\nTo optimize our planning and meet your deadlines, could you indicate the desired priority order for these projects?\n\nThis will allow us to allocate our resources to better meet your urgent needs.\n\nWe will proceed according to your instructions upon receipt of your response.\n\nBest regards,"
       },
       "variables": ["NuméroProjet1", "NuméroProjet2", "NuméroProjet3"]
+    },
+    {
+      "id": "rendez_vous_livraison",
+      "category": "Gestion de projets",
+      "title": {
+        "fr": "Rendez-vous de livraison",
+        "en": "Delivery appointment"
+      },
+      "description": {
+        "fr": "Planification d'un rendez-vous pour la livraison",
+        "en": "Scheduling a delivery appointment"
+      },
+      "subject": {
+        "fr": "Projet <<NuméroProjet>> – Rendez-vous de livraison le <<DateLivraison>>",
+        "en": "Project <<NuméroProjet>> – Delivery appointment on <<DateLivraison>>"
+      },
+      "body": {
+        "fr": "Bonjour,\n\nNous vous remercions pour votre projet <<NuméroProjet>>.\n\nNous souhaitons planifier un rendez-vous pour la livraison de votre projet :\n\n• Date : <<DateLivraison>>\n• Heure : <<HeureLivraison>>\n• Durée estimée : <<NbJours>> heure(s)\n• Montant final : <<Montant>>$\n\nVeuillez confirmer votre disponibilité pour cette date et cette heure.\n\nSi ce créneau ne vous convient pas, n'hésitez pas à nous proposer d'autres disponibilités.\n\nBien cordialement,",
+        "en": "Hello,\n\nThank you for your project <<NuméroProjet>>.\n\nWe would like to schedule an appointment for the delivery of your project:\n\n• Date: <<DateLivraison>>\n• Time: <<HeureLivraison>>\n• Estimated duration: <<NbJours>> hour(s)\n• Final amount: $<<Montant>>\n\nPlease confirm your availability for this date and time.\n\nIf this slot doesn't work for you, please feel free to suggest other availabilities.\n\nBest regards,"
+      },
+      "variables": ["NuméroProjet", "DateLivraison", "HeureLivraison", "NbJours", "Montant"]
     }
   ]
 }
