@@ -10,7 +10,7 @@ import path from 'path'
 // projet), nous définissons ici un port alternatif et autorisons Vite
 // à basculer automatiquement vers un autre port si nécessaire.
 export default defineConfig({
-  base: '/email-assistant/',
+  base: './',
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
