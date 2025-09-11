@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Search, FileText, Copy, RotateCcw, Languages, Filter, Globe, Sparkles, Mail, Edit3, Link, Calendar, Clock, CheckCircle, XCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button.jsx'
 import { Input } from '@/components/ui/input.jsx'
@@ -149,7 +149,7 @@ function App() {
 
   // Charger un modèle sélectionné
   useEffect(() => {
-    if (selectedTemplate) {
+    if (selectedTemplate && templatesData?.variables) {
       const initialVars = {}
       selectedTemplate.variables.forEach(varName => {
         const varInfo = templatesData.variables[varName]
@@ -274,36 +274,41 @@ function App() {
     if (!varInfo) return { isValid: true, message: '' }
     
     switch (varInfo.type) {
-      case 'email':
+      case 'email': {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         return {
           isValid: emailRegex.test(value),
           message: emailRegex.test(value) ? '' : 'Format email invalide'
         }
-      case 'phone':
-        const phoneRegex = /^[\d\s\-\+\(\)]+$/
+      }
+      case 'phone': {
+        const phoneRegex = /^[\d\s\-+()]+$/
         return {
           isValid: phoneRegex.test(value) && value.length >= 10,
           message: phoneRegex.test(value) && value.length >= 10 ? '' : 'Format téléphone invalide'
         }
-      case 'number':
+      }
+      case 'number': {
         const isNumber = !isNaN(value) && !isNaN(parseFloat(value))
         return {
           isValid: isNumber,
           message: isNumber ? '' : 'Doit être un nombre'
         }
-      case 'date':
+      }
+      case 'date': {
         const dateRegex = /^\d{4}-\d{2}-\d{2}$/
         return {
           isValid: dateRegex.test(value),
           message: dateRegex.test(value) ? '' : 'Format date invalide (YYYY-MM-DD)'
         }
-      case 'time':
+      }
+      case 'time': {
         const timeRegex = /^\d{2}:\d{2}$/
         return {
           isValid: timeRegex.test(value),
           message: timeRegex.test(value) ? '' : 'Format heure invalide (HH:MM)'
         }
+      }
       default:
         return { isValid: true, message: '' }
     }
