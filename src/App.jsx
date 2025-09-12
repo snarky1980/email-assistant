@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { loadState, saveState } from '@/utils/storage';
-import { Search, FileText, Copy, RotateCcw, Languages, Filter, Globe, Sparkles, Mail, Edit3 } from 'lucide-react'
+import { Search, FileText, Copy, RotateCcw, Languages, Filter, Globe, Sparkles, Mail, Edit3, Link } from 'lucide-react'
 import { Button } from '@/components/ui/button.jsx'
 import { Input } from '@/components/ui/input.jsx'
 import { Textarea } from '@/components/ui/textarea.jsx'
@@ -226,6 +226,84 @@ function App() {
     return result
   }
 
+  /**
+   * 🎨 FONCTION DE SURLIGNAGE DES VARIABLES - VERSION DISCRÈTE
+   * 
+   * Applique un surlignage doux et discret aux variables dans le texte
+   * Utilise des couleurs pastel pour une meilleure lisibilité
+   * 
+   * @param {string} text - Texte contenant des variables au format <<variable>>
+   * @returns {JSX.Element[]} - Tableau d'éléments React avec surlignage
+   */
+  const highlightVariables = (text) => {
+    if (!text) return text
+    
+    /**
+     * 🎨 PALETTE DE COULEURS DISCRÈTES
+     * Couleurs pastel pour un rendu professionnel et agréable
+     */
+    const VARIABLE_COLORS = {
+      email: 'bg-blue-50 text-blue-700 border-blue-200',      // Bleu doux pour emails
+      phone: 'bg-green-50 text-green-700 border-green-200',   // Vert doux pour téléphones
+      date: 'bg-purple-50 text-purple-700 border-purple-200', // Violet doux pour dates
+      number: 'bg-amber-50 text-amber-700 border-amber-200',  // Ambre doux pour nombres
+      default: 'bg-indigo-50 text-indigo-700 border-indigo-200', // Indigo par défaut
+      unknown: 'bg-gray-50 text-gray-600 border-gray-200'     // Gris pour variables inconnues
+    }
+    
+    /**
+     * 🎯 STYLES DE BASE POUR LE SURLIGNAGE
+     * Classes Tailwind pour un rendu discret et élégant
+     */
+    const BASE_HIGHLIGHT_CLASSES = 'inline px-1.5 py-0.5 rounded text-xs font-medium border transition-all duration-200'
+    
+    // Fonction pour obtenir la couleur selon le type de variable
+    const getVariableColor = (variableName) => {
+      const variableInfo = templatesData?.variables?.[variableName]
+      
+      if (!variableInfo) {
+        return VARIABLE_COLORS.unknown
+      }
+      
+      // Retourner la couleur selon le type, ou la couleur par défaut
+      return VARIABLE_COLORS[variableInfo.type] || VARIABLE_COLORS.default
+    }
+    
+    // Diviser le texte en parties pour identifier les variables (format <<variable>>)
+    const textParts = text.split(/(<<[^>]+>>)/g)
+    
+    return textParts.map((part, index) => {
+      // Vérifier si cette partie est une variable
+      const variableMatch = part.match(/^<<([^>]+)>>$/)
+      
+      if (variableMatch) {
+        const variableName = variableMatch[1]
+        const variableValue = variables[variableName]
+        const colorClasses = getVariableColor(variableName)
+        const isEmptyValue = !variableValue || variableValue.trim() === ''
+        
+        // Classes pour l'état vide (animation pulse + bordure pointillée)
+        const emptyStateClasses = isEmptyValue ? 'animate-pulse border-dashed' : 'border-solid'
+        
+        // Tooltip informatif
+        const tooltipText = `Variable: ${variableName}${isEmptyValue ? ' (vide)' : ` = ${variableValue}`}`
+        
+        return (
+          <span
+            key={index}
+            className={`${BASE_HIGHLIGHT_CLASSES} ${colorClasses} ${emptyStateClasses}`}
+            title={tooltipText}
+          >
+            {variableValue || `<<${variableName}>>`}
+          </span>
+        )
+      }
+      
+      // Retourner le texte normal sans modification
+      return part
+    })
+  }
+
   // Charger un modèle sélectionné
   useEffect(() => {
     if (selectedTemplate) {
@@ -310,6 +388,51 @@ function App() {
       console.error('Erreur lors de la copie:', error)
       // 🚨 Gestion d'erreur avec message utilisateur
       alert('Erreur lors de la copie. Veuillez sélectionner le texte manuellement et utiliser Ctrl+C.')
+    }
+  }
+
+  /**
+   * 🔗 FONCTION DE COPIE DE LIEN DIRECT
+   * Génère et copie l'URL complète pour accéder directement à ce template
+   * 
+   * Format: https://[domaine]/email-assistant/?id=[template_id]&lang=[langue]
+   * 
+   * UX: Permet aux CC de partager facilement des liens directs vers des templates spécifiques
+   * - Génération automatique de l'URL complète
+   * - Inclut l'ID du template et la langue actuelle
+   * - Feedback visuel de succès
+   */
+  const copyTemplateLink = async () => {
+    if (!selectedTemplate) return
+    
+    // 🌐 Construire l'URL complète avec paramètres
+    const currentUrl = window.location.origin + window.location.pathname
+    const templateUrl = `${currentUrl}?id=${selectedTemplate.id}&lang=${templateLanguage}`
+    
+    try {
+      // 📋 Copier l'URL dans le presse-papiers
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(templateUrl)
+      } else {
+        // 🔄 Fallback pour navigateurs anciens
+        const textArea = document.createElement('textarea')
+        textArea.value = templateUrl
+        textArea.style.position = 'fixed'
+        textArea.style.left = '-999999px'
+        textArea.style.top = '-999999px'
+        document.body.appendChild(textArea)
+        textArea.focus()
+        textArea.select()
+        document.execCommand('copy')
+        textArea.remove()
+      }
+      
+      // ✅ Feedback visuel temporaire
+      setCopySuccess(true)
+      setTimeout(() => setCopySuccess(false), 2000)
+    } catch (error) {
+      console.error('Erreur lors de la copie du lien:', error)
+      alert('Erreur lors de la copie du lien. Veuillez copier manuellement l\'URL depuis la barre d\'adresse.')
     }
   }
 
@@ -580,26 +703,33 @@ function App() {
                 </Card>
 
                 {/* Actions avec style moderne */}
-                <div className="flex justify-end space-x-4">
-                  <Button 
-                    variant="outline" 
-                    onClick={resetForm}
-                    className="border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-300 font-semibold"
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-gray-200">
+                  
+                  {/* Bouton copie de lien */}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => copyTemplateLink()}
+                    className="text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 font-medium text-sm"
+                    title="Copier le lien direct vers ce template"
                   >
-                    <RotateCcw className="h-4 w-4 mr-2" />
-                    {t.reset}
+                    <Link className="h-4 w-4 mr-2" />
+                    {t.copyLink || 'Copier le lien'}
                   </Button>
                   
-                  {/* 
-                    🎨 BOUTONS DE COPIE GRANULAIRE - UX AMÉLIORÉE
-                    
-                    Design pensé pour l'efficacité :
-                    - 3 boutons distincts avec codes couleur intuitifs
-                    - Tooltips explicatifs avec raccourcis clavier
-                    - Animations hover pour feedback visuel
-                    - Groupement logique (outline + principal)
-                  */}
-                  <div className="flex space-x-2">
+                  <div className="flex flex-wrap items-center gap-3">
+                    {/* Bouton reset */}
+                    <Button 
+                      variant="outline" 
+                      onClick={resetForm}
+                      className="border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-300 font-semibold"
+                    >
+                      <RotateCcw className="h-4 w-4 mr-2" />
+                      {t.reset}
+                    </Button>
+                  
+                  {/* Boutons de copie granulaire */}
+                  <div className="flex gap-2">
                     {/* 📧 Bouton Copie Objet - Bleu (associé aux emails) */}
                     <Button 
                       onClick={() => copyToClipboard('subject')} 
@@ -635,6 +765,7 @@ function App() {
                       <Copy className="h-5 w-5 mr-2" />
                       {copySuccess ? t.copied : (t.copyAll || 'Tout')}
                     </Button>
+                    </div>
                   </div>
                 </div>
               </>
