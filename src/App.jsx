@@ -607,9 +607,16 @@ function App() {
                             </p>
                             <Badge 
                               variant="secondary" 
-                              className="text-xs bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 border-purple-200"
+                              className={`text-xs font-medium ${
+                                template.category === 'Devis et estimations' ? 'bg-blue-100 text-blue-700 border-blue-200' :
+                                template.category === 'Gestion de projets' ? 'bg-green-100 text-green-700 border-green-200' :
+                                template.category === 'Problèmes techniques' ? 'bg-red-100 text-red-700 border-red-200' :
+                                template.category === 'Communications générales' ? 'bg-purple-100 text-purple-700 border-purple-200' :
+                                template.category === 'Services spécialisés' ? 'bg-orange-100 text-orange-700 border-orange-200' :
+                                'bg-gray-100 text-gray-700 border-gray-200'
+                              }`}
                             >
-                              {template.category}
+                              {t.categories?.[template.category] || template.category}
                             </Badge>
                           </div>
                         </div>
@@ -642,19 +649,76 @@ function App() {
                           
                           return (
                             <div key={varName} className="space-y-2">
-                              <label className="text-sm font-bold text-gray-700 flex items-center">
-                                <span className="w-2 h-2 bg-orange-400 rounded-full mr-2"></span>
+                              <label className={`text-sm font-bold flex items-center ${
+                                varInfo.type === 'email' ? 'text-blue-700' :
+                                varInfo.type === 'phone' ? 'text-green-700' :
+                                varInfo.type === 'date' ? 'text-purple-700' :
+                                varInfo.type === 'number' ? 'text-amber-700' :
+                                'text-indigo-700'
+                              }`}>
+                                <span className={`w-2 h-2 rounded-full mr-2 ${
+                                  varInfo.type === 'email' ? 'bg-blue-400' :
+                                  varInfo.type === 'phone' ? 'bg-green-400' :
+                                  varInfo.type === 'date' ? 'bg-purple-400' :
+                                  varInfo.type === 'number' ? 'bg-amber-400' :
+                                  'bg-indigo-400'
+                                }`}></span>
                                 {varInfo.description[interfaceLanguage]}
                               </label>
-                              <Input
-                                value={variables[varName] || ''}
-                                onChange={(e) => setVariables(prev => ({
-                                  ...prev,
-                                  [varName]: e.target.value
-                                }))}
-                                placeholder={varInfo.example}
-                                className="border-2 border-orange-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all duration-300"
-                              />
+                              
+                              {/* Sélecteur de date pour les variables de type date */}
+                              {varInfo.type === 'date' ? (
+                                <Input
+                                  type="date"
+                                  value={variables[varName] || ''}
+                                  onChange={(e) => setVariables(prev => ({
+                                    ...prev,
+                                    [varName]: e.target.value
+                                  }))}
+                                  className={`border-2 transition-all duration-300 ${
+                                    variables[varName] && variables[varName].trim() !== '' 
+                                      ? 'border-green-400 bg-green-50' 
+                                      : 'border-purple-200 focus:border-purple-400'
+                                  } focus:ring-2 focus:ring-purple-100`}
+                                />
+                              ) : varInfo.type === 'time' ? (
+                                <Input
+                                  type="time"
+                                  value={variables[varName] || ''}
+                                  onChange={(e) => setVariables(prev => ({
+                                    ...prev,
+                                    [varName]: e.target.value
+                                  }))}
+                                  className={`border-2 transition-all duration-300 ${
+                                    variables[varName] && variables[varName].trim() !== '' 
+                                      ? 'border-green-400 bg-green-50' 
+                                      : 'border-purple-200 focus:border-purple-400'
+                                  } focus:ring-2 focus:ring-purple-100`}
+                                />
+                              ) : (
+                                <Input
+                                  type={varInfo.type === 'email' ? 'email' : varInfo.type === 'number' ? 'number' : 'text'}
+                                  value={variables[varName] || ''}
+                                  onChange={(e) => setVariables(prev => ({
+                                    ...prev,
+                                    [varName]: e.target.value
+                                  }))}
+                                  placeholder={varInfo.example}
+                                  className={`border-2 transition-all duration-300 ${
+                                    variables[varName] && variables[varName].trim() !== '' 
+                                      ? 'border-green-400 bg-green-50' 
+                                      : `border-${varInfo.type === 'email' ? 'blue' : varInfo.type === 'phone' ? 'green' : varInfo.type === 'number' ? 'amber' : 'indigo'}-200 focus:border-${varInfo.type === 'email' ? 'blue' : varInfo.type === 'phone' ? 'green' : varInfo.type === 'number' ? 'amber' : 'indigo'}-400`
+                                  } focus:ring-2 focus:ring-${varInfo.type === 'email' ? 'blue' : varInfo.type === 'phone' ? 'green' : varInfo.type === 'number' ? 'amber' : 'indigo'}-100`}
+                                />
+                              )}
+                              
+                              {/* Indicateur de validation */}
+                              {variables[varName] && variables[varName].trim() !== '' && (
+                                <div className="flex items-center text-xs text-green-600 font-medium">
+                                  <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5"></span>
+                                  Valide
+                                </div>
+                              )}
                             </div>
                           )
                         })}
@@ -672,32 +736,46 @@ function App() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-6 space-y-6">
-                    {/* Objet éditable */}
+                    {/* Objet éditable avec surlignement */}
                     <div className="space-y-3">
                       <label className="text-lg font-bold text-gray-700 flex items-center">
                         <span className="w-3 h-3 bg-green-500 rounded-full mr-2 animate-pulse"></span>
                         {t.subject}
                       </label>
-                      <Textarea
-                        value={finalSubject}
-                        onChange={(e) => setFinalSubject(e.target.value)}
-                        className="min-h-[60px] resize-none border-3 border-green-300 focus:border-green-500 focus:ring-4 focus:ring-green-100 transition-all duration-300 text-lg font-medium"
-                        placeholder={t.subject}
-                      />
+                      <div className="relative">
+                        {/* Aperçu avec surlignement en arrière-plan */}
+                        <div className="absolute inset-0 p-3 text-lg font-medium text-transparent pointer-events-none whitespace-pre-wrap break-words overflow-hidden">
+                          {highlightVariables(finalSubject)}
+                        </div>
+                        {/* Champ d'édition transparent par-dessus */}
+                        <Textarea
+                          value={finalSubject}
+                          onChange={(e) => setFinalSubject(e.target.value)}
+                          className="min-h-[60px] resize-none border-3 border-green-300 focus:border-green-500 focus:ring-4 focus:ring-green-100 transition-all duration-300 text-lg font-medium bg-transparent relative z-10"
+                          placeholder={t.subject}
+                        />
+                      </div>
                     </div>
 
-                    {/* Corps éditable */}
+                    {/* Corps éditable avec surlignement */}
                     <div className="space-y-3">
                       <label className="text-lg font-bold text-gray-700 flex items-center">
                         <span className="w-3 h-3 bg-green-500 rounded-full mr-2 animate-pulse"></span>
                         {t.body}
                       </label>
-                      <Textarea
-                        value={finalBody}
-                        onChange={(e) => setFinalBody(e.target.value)}
-                        className="min-h-[250px] border-3 border-green-300 focus:border-green-500 focus:ring-4 focus:ring-green-100 transition-all duration-300 text-base leading-relaxed"
-                        placeholder={t.body}
-                      />
+                      <div className="relative">
+                        {/* Aperçu avec surlignement en arrière-plan */}
+                        <div className="absolute inset-0 p-3 text-base leading-relaxed text-transparent pointer-events-none whitespace-pre-wrap break-words overflow-hidden">
+                          {highlightVariables(finalBody)}
+                        </div>
+                        {/* Champ d'édition transparent par-dessus */}
+                        <Textarea
+                          value={finalBody}
+                          onChange={(e) => setFinalBody(e.target.value)}
+                          className="min-h-[250px] border-3 border-green-300 focus:border-green-500 focus:ring-4 focus:ring-green-100 transition-all duration-300 text-base leading-relaxed bg-transparent relative z-10"
+                          placeholder={t.body}
+                        />
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
