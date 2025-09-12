@@ -374,7 +374,14 @@ function App() {
                             </p>
                             <Badge 
                               variant="secondary" 
-                              className="text-xs bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 border-purple-200"
+                              className={`text-xs font-medium ${
+                                template.category === 'Devis et estimations' ? 'bg-blue-100 text-blue-700 border-blue-200' :
+                                template.category === 'Gestion de projets' ? 'bg-green-100 text-green-700 border-green-200' :
+                                template.category === 'Problèmes techniques' ? 'bg-red-100 text-red-700 border-red-200' :
+                                template.category === 'Communications générales' ? 'bg-purple-100 text-purple-700 border-purple-200' :
+                                template.category === 'Services spécialisés' ? 'bg-amber-100 text-amber-700 border-amber-200' :
+                                'bg-gray-100 text-gray-700 border-gray-200'
+                              }`}
                             >
                               {template.category}
                             </Badge>
