@@ -59,6 +59,10 @@ function App() {
       emailContent: "Contenu de l'email",
       editableVersion: "✏️ Éditez votre email",
       copy: "Copier",
+      copySubject: "Copier Objet",
+      copyBody: "Copier Corps", 
+      copyAll: "Copier Tout",
+      copyLink: "Copier le lien",
       reset: "Réinitialiser",
       copied: "✅ Email copié !",
       noTemplate: "Sélectionnez un modèle pour commencer",
@@ -78,6 +82,10 @@ function App() {
       emailContent: "Email content",
       editableVersion: "✏️ Edit your email",
       copy: "Copy",
+      copySubject: "Copy Subject",
+      copyBody: "Copy Body",
+      copyAll: "Copy All", 
+      copyLink: "Copy Link",
       reset: "Reset",
       copied: "✅ Email copied!",
       noTemplate: "Select a template to get started",
@@ -202,6 +210,90 @@ function App() {
       console.error('Erreur lors de la copie:', error)
       // Afficher un message d'erreur à l'utilisateur
       alert('Erreur lors de la copie. Veuillez sélectionner le texte manuellement et utiliser Ctrl+C.')
+    }
+  }
+
+  // Copier uniquement l'objet
+  const copySubjectOnly = async () => {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(finalSubject)
+      } else {
+        const textArea = document.createElement('textarea')
+        textArea.value = finalSubject
+        textArea.style.position = 'fixed'
+        textArea.style.left = '-999999px'
+        textArea.style.top = '-999999px'
+        document.body.appendChild(textArea)
+        textArea.focus()
+        textArea.select()
+        document.execCommand('copy')
+        textArea.remove()
+      }
+      setCopySuccess(true)
+      setTimeout(() => setCopySuccess(false), 2000)
+    } catch (error) {
+      console.error('Erreur lors de la copie de l\'objet:', error)
+    }
+  }
+
+  // Copier uniquement le corps
+  const copyBodyOnly = async () => {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(finalBody)
+      } else {
+        const textArea = document.createElement('textarea')
+        textArea.value = finalBody
+        textArea.style.position = 'fixed'
+        textArea.style.left = '-999999px'
+        textArea.style.top = '-999999px'
+        document.body.appendChild(textArea)
+        textArea.focus()
+        textArea.select()
+        document.execCommand('copy')
+        textArea.remove()
+      }
+      setCopySuccess(true)
+      setTimeout(() => setCopySuccess(false), 2000)
+    } catch (error) {
+      console.error('Erreur lors de la copie du corps:', error)
+    }
+  }
+
+  // Copier le lien profond
+  const copyTemplateLink = async () => {
+    if (!selectedTemplate) return
+    
+    const currentUrl = new URL(window.location.href)
+    currentUrl.searchParams.set('template', selectedTemplate.id)
+    
+    // Ajouter les variables si elles sont remplies
+    Object.entries(variables).forEach(([key, value]) => {
+      if (value && value.trim() !== '') {
+        currentUrl.searchParams.set(key, value)
+      }
+    })
+    
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(currentUrl.toString())
+      } else {
+        const textArea = document.createElement('textarea')
+        textArea.value = currentUrl.toString()
+        textArea.style.position = 'fixed'
+        textArea.style.left = '-999999px'
+        textArea.style.top = '-999999px'
+        document.body.appendChild(textArea)
+        textArea.focus()
+        textArea.select()
+        document.execCommand('copy')
+        textArea.remove()
+      }
+      setCopySuccess(true)
+      setTimeout(() => setCopySuccess(false), 2000)
+    } catch (error) {
+      console.error('Erreur lors de la copie du lien:', error)
     }
   }
 
@@ -477,26 +569,57 @@ function App() {
                 </Card>
 
                 {/* Actions avec style moderne */}
-                <div className="flex justify-end space-x-4">
-                  <Button 
-                    variant="outline" 
-                    onClick={resetForm}
-                    className="border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-300 font-semibold"
-                  >
-                    <RotateCcw className="h-4 w-4 mr-2" />
-                    {t.reset}
-                  </Button>
-                  <Button 
-                    onClick={copyToClipboard} 
-                    className={`font-bold text-lg px-8 py-3 transition-all duration-300 ${
-                      copySuccess 
-                        ? 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 transform scale-105' 
-                        : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 hover:scale-105'
-                    } shadow-lg`}
-                  >
-                    <Copy className="h-5 w-5 mr-2" />
-                    {copySuccess ? t.copied : t.copy}
-                  </Button>
+                <div className="space-y-4">
+                  {/* Bouton de copie de lien profond */}
+                  <div className="flex justify-center">
+                    <Button 
+                      variant="outline" 
+                      onClick={copyTemplateLink}
+                      className="border-2 border-purple-300 hover:border-purple-400 hover:bg-purple-50 transition-all duration-300 font-semibold text-purple-700"
+                    >
+                      <Copy className="h-4 w-4 mr-2" />
+                      {t.copyLink}
+                    </Button>
+                  </div>
+                  
+                  {/* Boutons d'action principaux */}
+                  <div className="flex justify-center space-x-3">
+                    <Button 
+                      variant="outline" 
+                      onClick={resetForm}
+                      className="border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-300 font-semibold"
+                    >
+                      <RotateCcw className="h-4 w-4 mr-2" />
+                      {t.reset}
+                    </Button>
+                    
+                    {/* Boutons de copie granulaire */}
+                    <Button 
+                      onClick={copySubjectOnly}
+                      className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold transition-all duration-300 hover:scale-105"
+                    >
+                      {t.copySubject}
+                    </Button>
+                    
+                    <Button 
+                      onClick={copyBodyOnly}
+                      className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold transition-all duration-300 hover:scale-105"
+                    >
+                      {t.copyBody}
+                    </Button>
+                    
+                    <Button 
+                      onClick={copyToClipboard} 
+                      className={`font-bold px-6 py-2 transition-all duration-300 ${
+                        copySuccess 
+                          ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 transform scale-105' 
+                          : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 hover:scale-105'
+                      } text-white shadow-lg`}
+                    >
+                      <Copy className="h-4 w-4 mr-2" />
+                      {copySuccess ? t.copied : t.copyAll}
+                    </Button>
+                  </div>
                 </div>
               </>
             ) : (
