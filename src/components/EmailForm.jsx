@@ -19,9 +19,6 @@ import React, { useState } from 'react';
 const EmailForm = ({ formData, selectedTemplate, onFormChange, onGenerate }) => {
   // État local pour la validation des champs
   const [fieldErrors, setFieldErrors] = useState({});
-  
-  // État pour indiquer si le formulaire a été soumis
-  const [isSubmitted, setIsSubmitted] = useState(false);
 
   /**
    * Valide un champ spécifique
@@ -117,7 +114,6 @@ const EmailForm = ({ formData, selectedTemplate, onFormChange, onGenerate }) => 
    */
   const handleSubmit = (event) => {
     event.preventDefault();
-    setIsSubmitted(true);
     
     if (validateForm()) {
       onGenerate();
@@ -136,7 +132,6 @@ const EmailForm = ({ formData, selectedTemplate, onFormChange, onGenerate }) => 
       language: 'fr'
     });
     setFieldErrors({});
-    setIsSubmitted(false);
   };
 
   // Si aucun modèle n'est sélectionné, afficher un message

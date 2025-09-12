@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
-import path from 'path'
+import { fileURLToPath, URL } from 'node:url'
 
 // https://vite.dev/config/
 // Ce fichier de configuration définit les paramètres pour Vite.
@@ -10,11 +10,11 @@ import path from 'path'
 // projet), nous définissons ici un port alternatif et autorisons Vite
 // à basculer automatiquement vers un autre port si nécessaire.
 export default defineConfig({
-  base: '/email-assistant/',
+  base: './',
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
   server: {
