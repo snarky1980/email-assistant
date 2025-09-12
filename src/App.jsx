@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { loadState, saveState } from '@/utils/storage';
-import { Search, FileText, Copy, RotateCcw, Languages, Filter, Globe, Sparkles, Mail, Edit3, Link } from 'lucide-react'
+import { Search, FileText, Copy, RotateCcw, Languages, Filter, Globe, Sparkles, Mail, Edit3 } from 'lucide-react'
 import { Button } from '@/components/ui/button.jsx'
 import { Input } from '@/components/ui/input.jsx'
 import { Textarea } from '@/components/ui/textarea.jsx'
@@ -29,9 +29,8 @@ function App() {
   const [finalBody, setFinalBody] = useState('') // Version finale éditable
   const [variables, setVariables] = useState(savedState.variables || {})
   const [copySuccess, setCopySuccess] = useState(false)
-  
-  // 🎯 RÉFÉRENCES POUR LES RACCOURCIS CLAVIER
-  const searchRef = useRef(null) // Référence pour focus sur la recherche (Ctrl+J)
+
+  const searchRef = useRef(null);
 
   // Sauvegarder automatiquement les préférences importantes
   useEffect(() => {
@@ -47,46 +46,42 @@ function App() {
   // Textes de l'interface selon la langue
   const interfaceTexts = {
     fr: {
-      title: 'Assistant pour rédaction de courriels aux clients',
-      subtitle: 'Bureau de la traduction',
-      selectTemplate: 'Sélectionnez un modèle',
-      templatesCount: (count) => `${count} modèles disponibles`,
-      searchPlaceholder: '🔍 Rechercher un modèle...',
-      allCategories: 'Toutes les catégories',
-      templateLanguage: 'Langue du modèle:',
-      interfaceLanguage: 'Langue de l\'interface:',
-      variables: 'Variables',
-      editEmail: 'Éditez votre email',
-      subject: 'Objet',
-      body: 'Corps du message',
-      reset: 'Réinitialiser',
-      copy: 'Copier',
-      copySubject: 'Objet',
-      copyBody: 'Corps', 
-      copyAll: 'Tout',
-      copied: 'Copié !',
-      noTemplate: 'Sélectionnez un modèle pour commencer'
+      title: "Assistant pour rédaction de courriels aux clients",
+      subtitle: "Bureau de la traduction",
+      searchPlaceholder: "🔍 Rechercher un modèle...",
+      allCategories: "Toutes les catégories",
+      selectTemplate: "Sélectionnez un modèle",
+      templateLanguage: "Langue du modèle",
+      interfaceLanguage: "Langue de l'interface",
+      variables: "Variables",
+      subject: "Objet",
+      body: "Corps du message",
+      emailContent: "Contenu de l'email",
+      editableVersion: "✏️ Éditez votre email",
+      copy: "Copier",
+      reset: "Réinitialiser",
+      copied: "✅ Email copié !",
+      noTemplate: "Sélectionnez un modèle pour commencer",
+      templatesCount: "modèles disponibles"
     },
     en: {
-      title: 'Email Writing Assistant for Clients',
-      subtitle: 'Translation Bureau',
-      selectTemplate: 'Select a template',
-      templatesCount: (count) => `${count} templates available`,
-      searchPlaceholder: '🔍 Search for a template...',
-      allCategories: 'All categories',
-      templateLanguage: 'Template language:',
-      interfaceLanguage: 'Interface language:',
-      variables: 'Variables',
-      editEmail: 'Edit your email',
-      subject: 'Subject',
-      body: 'Message body',
-      reset: 'Reset',
-      copy: 'Copy',
-      copySubject: 'Subject',
-      copyBody: 'Body',
-      copyAll: 'All',
-      copied: 'Copied!',
-      noTemplate: 'Select a template to get started'
+      title: "Email Writing Assistant for Clients",
+      subtitle: "Translation Bureau",
+      searchPlaceholder: "🔍 Search for a template...",
+      allCategories: "All categories",
+      selectTemplate: "Select a template",
+      templateLanguage: "Template language",
+      interfaceLanguage: "Interface language",
+      variables: "Variables",
+      subject: "Subject",
+      body: "Message body",
+      emailContent: "Email content",
+      editableVersion: "✏️ Edit your email",
+      copy: "Copy",
+      reset: "Reset",
+      copied: "✅ Email copied!",
+      noTemplate: "Select a template to get started",
+      templatesCount: "templates available"
     }
   }
 
@@ -111,83 +106,6 @@ function App() {
     
     loadTemplatesData()
   }, [])
-
-  /**
-   * 🔗 SUPPORT DES PARAMÈTRES URL POUR PARTAGE DE LIENS PROFONDS
-   * 
-   * Permet de partager des liens directs vers un template spécifique :
-   * - ?id=devis_avec_approbation : Pré-sélectionne ce template
-   * - &lang=en : Force la langue anglaise
-   * 
-   * Exemple d'URL complète :
-   * https://monsite.com/email-assistant/?id=devis_avec_approbation&lang=en
-   * 
-   * UX: Idéal pour partager des liens dans Teams/Slack vers un template précis
-   */
-  useEffect(() => {
-    if (!templatesData) return
-    
-    // 📖 Lire les paramètres de l'URL actuelle
-    const params = new URLSearchParams(window.location.search)
-    const templateId = params.get('id')
-    const langParam = params.get('lang')
-    
-    // 🌐 Appliquer la langue depuis l'URL si spécifiée et valide
-    if (langParam && ['fr', 'en'].includes(langParam)) {
-      setTemplateLanguage(langParam)
-      setInterfaceLanguage(langParam)
-    }
-    
-    // 🎯 Pré-sélectionner le template depuis l'URL
-    if (templateId) {
-      const template = templatesData.templates.find(t => t.id === templateId)
-      if (template) {
-        setSelectedTemplate(template)
-      }
-    }
-  }, [templatesData]) // Se déclenche quand les templates sont chargés
-
-  /**
-   * ⌨️ RACCOURCIS CLAVIER POUR UNE UX PROFESSIONNELLE
-   * 
-   * Raccourcis inspirés des logiciels professionnels pour une utilisation rapide :
-   * - Ctrl/Cmd + Enter : Copier tout l'email (action principale)
-   * - Ctrl/Cmd + B : Copier le corps seulement (Body)
-   * - Ctrl/Cmd + J : Focus sur la recherche (Jump to search)
-   * 
-   * Compatible Mac (Cmd) et PC (Ctrl) pour une expérience universelle
-   */
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      // 🚀 Ctrl/Cmd + Enter : Copier tout (action rapide principale)
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-        e.preventDefault()
-        if (selectedTemplate) {
-          copyToClipboard('all')
-        }
-      }
-      
-      // 📝 Ctrl/Cmd + B : Copier le corps seulement (Body)
-      if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
-        e.preventDefault()
-        if (selectedTemplate) {
-          copyToClipboard('body')
-        }
-      }
-      
-      // 🔍 Ctrl/Cmd + J : Focus sur la recherche (Jump to search)
-      if ((e.ctrlKey || e.metaKey) && e.key === 'j') {
-        e.preventDefault()
-        if (searchRef.current) {
-          searchRef.current.focus()
-        }
-      }
-    }
-
-    // 🎯 Attacher les événements clavier globalement
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [selectedTemplate]) // Re-bind quand le template change
 
   // Filtrer les modèles selon la recherche et la catégorie
   const filteredTemplates = useMemo(() => {
@@ -226,84 +144,6 @@ function App() {
     return result
   }
 
-  /**
-   * 🎨 FONCTION DE SURLIGNAGE DES VARIABLES - VERSION DISCRÈTE
-   * 
-   * Applique un surlignage doux et discret aux variables dans le texte
-   * Utilise des couleurs pastel pour une meilleure lisibilité
-   * 
-   * @param {string} text - Texte contenant des variables au format <<variable>>
-   * @returns {JSX.Element[]} - Tableau d'éléments React avec surlignage
-   */
-  const highlightVariables = (text) => {
-    if (!text) return text
-    
-    /**
-     * 🎨 PALETTE DE COULEURS DISCRÈTES
-     * Couleurs pastel pour un rendu professionnel et agréable
-     */
-    const VARIABLE_COLORS = {
-      email: 'bg-blue-50 text-blue-700 border-blue-200',      // Bleu doux pour emails
-      phone: 'bg-green-50 text-green-700 border-green-200',   // Vert doux pour téléphones
-      date: 'bg-purple-50 text-purple-700 border-purple-200', // Violet doux pour dates
-      number: 'bg-amber-50 text-amber-700 border-amber-200',  // Ambre doux pour nombres
-      default: 'bg-indigo-50 text-indigo-700 border-indigo-200', // Indigo par défaut
-      unknown: 'bg-gray-50 text-gray-600 border-gray-200'     // Gris pour variables inconnues
-    }
-    
-    /**
-     * 🎯 STYLES DE BASE POUR LE SURLIGNAGE
-     * Classes Tailwind pour un rendu discret et élégant
-     */
-    const BASE_HIGHLIGHT_CLASSES = 'inline px-1.5 py-0.5 rounded text-xs font-medium border transition-all duration-200'
-    
-    // Fonction pour obtenir la couleur selon le type de variable
-    const getVariableColor = (variableName) => {
-      const variableInfo = templatesData?.variables?.[variableName]
-      
-      if (!variableInfo) {
-        return VARIABLE_COLORS.unknown
-      }
-      
-      // Retourner la couleur selon le type, ou la couleur par défaut
-      return VARIABLE_COLORS[variableInfo.type] || VARIABLE_COLORS.default
-    }
-    
-    // Diviser le texte en parties pour identifier les variables (format <<variable>>)
-    const textParts = text.split(/(<<[^>]+>>)/g)
-    
-    return textParts.map((part, index) => {
-      // Vérifier si cette partie est une variable
-      const variableMatch = part.match(/^<<([^>]+)>>$/)
-      
-      if (variableMatch) {
-        const variableName = variableMatch[1]
-        const variableValue = variables[variableName]
-        const colorClasses = getVariableColor(variableName)
-        const isEmptyValue = !variableValue || variableValue.trim() === ''
-        
-        // Classes pour l'état vide (animation pulse + bordure pointillée)
-        const emptyStateClasses = isEmptyValue ? 'animate-pulse border-dashed' : 'border-solid'
-        
-        // Tooltip informatif
-        const tooltipText = `Variable: ${variableName}${isEmptyValue ? ' (vide)' : ` = ${variableValue}`}`
-        
-        return (
-          <span
-            key={index}
-            className={`${BASE_HIGHLIGHT_CLASSES} ${colorClasses} ${emptyStateClasses}`}
-            title={tooltipText}
-          >
-            {variableValue || `<<${variableName}>>`}
-          </span>
-        )
-      }
-      
-      // Retourner le texte normal sans modification
-      return part
-    })
-  }
-
   // Charger un modèle sélectionné
   useEffect(() => {
     if (selectedTemplate) {
@@ -335,42 +175,17 @@ function App() {
     }
   }, [variables, selectedTemplate, templateLanguage])
 
-  /**
-   * 📋 FONCTION DE COPIE GRANULAIRE
-   * Permet de copier différentes parties de l'email selon le besoin de l'utilisateur
-   * 
-   * @param {string} type - Type de contenu à copier ('subject', 'body', 'all')
-   * 
-   * UX: Chaque type de copie a son propre bouton avec des couleurs distinctives
-   * - Objet (bleu) : Pour coller uniquement dans le champ "Subject" d'Outlook/Teams
-   * - Corps (vert) : Pour coller le contenu principal sans l'objet
-   * - Tout (gradient) : Copie complète avec objet + corps (comportement original)
-   */
-  const copyToClipboard = async (type = 'all') => {
-    let content = ''
-    
-    // 🎯 Sélection du contenu selon le type demandé
-    switch (type) {
-      case 'subject':
-        content = finalSubject
-        break
-      case 'body':
-        content = finalBody
-        break
-      case 'all':
-      default:
-        content = `${finalSubject}\n\n${finalBody}`
-        break
-    }
+  // Copier le contenu dans le presse-papiers
+  const copyToClipboard = async () => {
+    const fullEmail = `${finalSubject}\n\n${finalBody}`
     
     try {
-      // 🔒 Méthode moderne et sécurisée (HTTPS requis)
       if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(content)
+        await navigator.clipboard.writeText(fullEmail)
       } else {
-        // 🔄 Fallback pour navigateurs anciens ou contextes non-sécurisés
+        // Fallback pour les navigateurs plus anciens ou contextes non sécurisés
         const textArea = document.createElement('textarea')
-        textArea.value = content
+        textArea.value = fullEmail
         textArea.style.position = 'fixed'
         textArea.style.left = '-999999px'
         textArea.style.top = '-999999px'
@@ -381,58 +196,12 @@ function App() {
         textArea.remove()
       }
       
-      // ✅ Feedback visuel de succès (2 secondes)
       setCopySuccess(true)
-      setTimeout(() => setCopySuccess(false), 2000)
+      setTimeout(() => setCopySuccess(false), 3000)
     } catch (error) {
       console.error('Erreur lors de la copie:', error)
-      // 🚨 Gestion d'erreur avec message utilisateur
+      // Afficher un message d'erreur à l'utilisateur
       alert('Erreur lors de la copie. Veuillez sélectionner le texte manuellement et utiliser Ctrl+C.')
-    }
-  }
-
-  /**
-   * 🔗 FONCTION DE COPIE DE LIEN DIRECT
-   * Génère et copie l'URL complète pour accéder directement à ce template
-   * 
-   * Format: https://[domaine]/email-assistant/?id=[template_id]&lang=[langue]
-   * 
-   * UX: Permet aux CC de partager facilement des liens directs vers des templates spécifiques
-   * - Génération automatique de l'URL complète
-   * - Inclut l'ID du template et la langue actuelle
-   * - Feedback visuel de succès
-   */
-  const copyTemplateLink = async () => {
-    if (!selectedTemplate) return
-    
-    // 🌐 Construire l'URL complète avec paramètres
-    const currentUrl = window.location.origin + window.location.pathname
-    const templateUrl = `${currentUrl}?id=${selectedTemplate.id}&lang=${templateLanguage}`
-    
-    try {
-      // 📋 Copier l'URL dans le presse-papiers
-      if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(templateUrl)
-      } else {
-        // 🔄 Fallback pour navigateurs anciens
-        const textArea = document.createElement('textarea')
-        textArea.value = templateUrl
-        textArea.style.position = 'fixed'
-        textArea.style.left = '-999999px'
-        textArea.style.top = '-999999px'
-        document.body.appendChild(textArea)
-        textArea.focus()
-        textArea.select()
-        document.execCommand('copy')
-        textArea.remove()
-      }
-      
-      // ✅ Feedback visuel temporaire
-      setCopySuccess(true)
-      setTimeout(() => setCopySuccess(false), 2000)
-    } catch (error) {
-      console.error('Erreur lors de la copie du lien:', error)
-      alert('Erreur lors de la copie du lien. Veuillez copier manuellement l\'URL depuis la barre d\'adresse.')
     }
   }
 
@@ -528,15 +297,13 @@ function App() {
                 
                 {/* Recherche avec style moderne */}
                 <div className="relative group">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-orange-500 transition-colors" />
-                    <Input
-                      ref={searchRef}
-                      type="text"
-                      placeholder={t.searchPlaceholder}
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 border-2 border-orange-200 focus:border-orange-400 focus:ring-4 focus:ring-orange-100 transition-all duration-300"
-                    />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                  <Input
+                    placeholder={t.searchPlaceholder}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 border-2 border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-300"
+                  />
                 </div>
 
                 {/* Filtre par catégorie avec style */}
@@ -612,11 +379,11 @@ function App() {
                                 template.category === 'Gestion de projets' ? 'bg-green-100 text-green-700 border-green-200' :
                                 template.category === 'Problèmes techniques' ? 'bg-red-100 text-red-700 border-red-200' :
                                 template.category === 'Communications générales' ? 'bg-purple-100 text-purple-700 border-purple-200' :
-                                template.category === 'Services spécialisés' ? 'bg-orange-100 text-orange-700 border-orange-200' :
+                                template.category === 'Services spécialisés' ? 'bg-amber-100 text-amber-700 border-amber-200' :
                                 'bg-gray-100 text-gray-700 border-gray-200'
                               }`}
                             >
-                              {t.categories?.[template.category] || template.category}
+                              {template.category}
                             </Badge>
                           </div>
                         </div>
@@ -649,76 +416,19 @@ function App() {
                           
                           return (
                             <div key={varName} className="space-y-2">
-                              <label className={`text-sm font-bold flex items-center ${
-                                varInfo.type === 'email' ? 'text-blue-700' :
-                                varInfo.type === 'phone' ? 'text-green-700' :
-                                varInfo.type === 'date' ? 'text-purple-700' :
-                                varInfo.type === 'number' ? 'text-amber-700' :
-                                'text-indigo-700'
-                              }`}>
-                                <span className={`w-2 h-2 rounded-full mr-2 ${
-                                  varInfo.type === 'email' ? 'bg-blue-400' :
-                                  varInfo.type === 'phone' ? 'bg-green-400' :
-                                  varInfo.type === 'date' ? 'bg-purple-400' :
-                                  varInfo.type === 'number' ? 'bg-amber-400' :
-                                  'bg-indigo-400'
-                                }`}></span>
+                              <label className="text-sm font-bold text-gray-700 flex items-center">
+                                <span className="w-2 h-2 bg-orange-400 rounded-full mr-2"></span>
                                 {varInfo.description[interfaceLanguage]}
                               </label>
-                              
-                              {/* Sélecteur de date pour les variables de type date */}
-                              {varInfo.type === 'date' ? (
-                                <Input
-                                  type="date"
-                                  value={variables[varName] || ''}
-                                  onChange={(e) => setVariables(prev => ({
-                                    ...prev,
-                                    [varName]: e.target.value
-                                  }))}
-                                  className={`border-2 transition-all duration-300 ${
-                                    variables[varName] && variables[varName].trim() !== '' 
-                                      ? 'border-green-400 bg-green-50' 
-                                      : 'border-purple-200 focus:border-purple-400'
-                                  } focus:ring-2 focus:ring-purple-100`}
-                                />
-                              ) : varInfo.type === 'time' ? (
-                                <Input
-                                  type="time"
-                                  value={variables[varName] || ''}
-                                  onChange={(e) => setVariables(prev => ({
-                                    ...prev,
-                                    [varName]: e.target.value
-                                  }))}
-                                  className={`border-2 transition-all duration-300 ${
-                                    variables[varName] && variables[varName].trim() !== '' 
-                                      ? 'border-green-400 bg-green-50' 
-                                      : 'border-purple-200 focus:border-purple-400'
-                                  } focus:ring-2 focus:ring-purple-100`}
-                                />
-                              ) : (
-                                <Input
-                                  type={varInfo.type === 'email' ? 'email' : varInfo.type === 'number' ? 'number' : 'text'}
-                                  value={variables[varName] || ''}
-                                  onChange={(e) => setVariables(prev => ({
-                                    ...prev,
-                                    [varName]: e.target.value
-                                  }))}
-                                  placeholder={varInfo.example}
-                                  className={`border-2 transition-all duration-300 ${
-                                    variables[varName] && variables[varName].trim() !== '' 
-                                      ? 'border-green-400 bg-green-50' 
-                                      : `border-${varInfo.type === 'email' ? 'blue' : varInfo.type === 'phone' ? 'green' : varInfo.type === 'number' ? 'amber' : 'indigo'}-200 focus:border-${varInfo.type === 'email' ? 'blue' : varInfo.type === 'phone' ? 'green' : varInfo.type === 'number' ? 'amber' : 'indigo'}-400`
-                                  } focus:ring-2 focus:ring-${varInfo.type === 'email' ? 'blue' : varInfo.type === 'phone' ? 'green' : varInfo.type === 'number' ? 'amber' : 'indigo'}-100`}
-                                />
-                              )}
-                              
-                              {/* Indicateur de validation */}
-                              {variables[varName] && variables[varName].trim() !== '' && (
-                                <div className="flex items-center text-xs text-green-600 font-medium">
-                                  <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5"></span>
-                                  Valide
-                                </div>
-                              )}
+                              <Input
+                                value={variables[varName] || ''}
+                                onChange={(e) => setVariables(prev => ({
+                                  ...prev,
+                                  [varName]: e.target.value
+                                }))}
+                                placeholder={varInfo.example}
+                                className="border-2 border-orange-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all duration-300"
+                              />
                             </div>
                           )
                         })}
@@ -736,115 +446,57 @@ function App() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-6 space-y-6">
-                    {/* Objet éditable avec surlignement */}
+                    {/* Objet éditable */}
                     <div className="space-y-3">
                       <label className="text-lg font-bold text-gray-700 flex items-center">
                         <span className="w-3 h-3 bg-green-500 rounded-full mr-2 animate-pulse"></span>
                         {t.subject}
                       </label>
-                      <div className="relative">
-                        {/* Aperçu avec surlignement en arrière-plan */}
-                        <div className="absolute inset-0 p-3 text-lg font-medium text-transparent pointer-events-none whitespace-pre-wrap break-words overflow-hidden">
-                          {highlightVariables(finalSubject)}
-                        </div>
-                        {/* Champ d'édition transparent par-dessus */}
-                        <Textarea
-                          value={finalSubject}
-                          onChange={(e) => setFinalSubject(e.target.value)}
-                          className="min-h-[60px] resize-none border-3 border-green-300 focus:border-green-500 focus:ring-4 focus:ring-green-100 transition-all duration-300 text-lg font-medium bg-transparent relative z-10"
-                          placeholder={t.subject}
-                        />
-                      </div>
+                      <Textarea
+                        value={finalSubject}
+                        onChange={(e) => setFinalSubject(e.target.value)}
+                        className="min-h-[60px] resize-none border-3 border-green-300 focus:border-green-500 focus:ring-4 focus:ring-green-100 transition-all duration-300 text-lg font-medium"
+                        placeholder={t.subject}
+                      />
                     </div>
 
-                    {/* Corps éditable avec surlignement */}
+                    {/* Corps éditable */}
                     <div className="space-y-3">
                       <label className="text-lg font-bold text-gray-700 flex items-center">
                         <span className="w-3 h-3 bg-green-500 rounded-full mr-2 animate-pulse"></span>
                         {t.body}
                       </label>
-                      <div className="relative">
-                        {/* Aperçu avec surlignement en arrière-plan */}
-                        <div className="absolute inset-0 p-3 text-base leading-relaxed text-transparent pointer-events-none whitespace-pre-wrap break-words overflow-hidden">
-                          {highlightVariables(finalBody)}
-                        </div>
-                        {/* Champ d'édition transparent par-dessus */}
-                        <Textarea
-                          value={finalBody}
-                          onChange={(e) => setFinalBody(e.target.value)}
-                          className="min-h-[250px] border-3 border-green-300 focus:border-green-500 focus:ring-4 focus:ring-green-100 transition-all duration-300 text-base leading-relaxed bg-transparent relative z-10"
-                          placeholder={t.body}
-                        />
-                      </div>
+                      <Textarea
+                        value={finalBody}
+                        onChange={(e) => setFinalBody(e.target.value)}
+                        className="min-h-[250px] border-3 border-green-300 focus:border-green-500 focus:ring-4 focus:ring-green-100 transition-all duration-300 text-base leading-relaxed"
+                        placeholder={t.body}
+                      />
                     </div>
                   </CardContent>
                 </Card>
 
                 {/* Actions avec style moderne */}
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-gray-200">
-                  
-                  {/* Bouton copie de lien */}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => copyTemplateLink()}
-                    className="text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 font-medium text-sm"
-                    title="Copier le lien direct vers ce template"
+                <div className="flex justify-end space-x-4">
+                  <Button 
+                    variant="outline" 
+                    onClick={resetForm}
+                    className="border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-300 font-semibold"
                   >
-                    <Link className="h-4 w-4 mr-2" />
-                    {t.copyLink || 'Copier le lien'}
+                    <RotateCcw className="h-4 w-4 mr-2" />
+                    {t.reset}
                   </Button>
-                  
-                  <div className="flex flex-wrap items-center gap-3">
-                    {/* Bouton reset */}
-                    <Button 
-                      variant="outline" 
-                      onClick={resetForm}
-                      className="border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-300 font-semibold"
-                    >
-                      <RotateCcw className="h-4 w-4 mr-2" />
-                      {t.reset}
-                    </Button>
-                  
-                  {/* Boutons de copie granulaire */}
-                  <div className="flex gap-2">
-                    {/* 📧 Bouton Copie Objet - Bleu (associé aux emails) */}
-                    <Button 
-                      onClick={() => copyToClipboard('subject')} 
-                      variant="outline"
-                      className="font-medium px-4 py-2 border-2 border-blue-300 hover:border-blue-500 hover:bg-blue-50 transition-all duration-300 group"
-                      title="Copier l'objet seulement (Ctrl+J)"
-                    >
-                      <Mail className="h-4 w-4 mr-2 group-hover:text-blue-600" />
-                      {t.copySubject || 'Objet'}
-                    </Button>
-                    
-                    {/* 📝 Bouton Copie Corps - Vert (associé au contenu) */}
-                    <Button 
-                      onClick={() => copyToClipboard('body')} 
-                      variant="outline"
-                      className="font-medium px-4 py-2 border-2 border-green-300 hover:border-green-500 hover:bg-green-50 transition-all duration-300 group"
-                      title="Copier le corps seulement (Ctrl+B)"
-                    >
-                      <Edit3 className="h-4 w-4 mr-2 group-hover:text-green-600" />
-                      {t.copyBody || 'Corps'}
-                    </Button>
-                    
-                    {/* 🚀 Bouton Copie Complète - Gradient (action principale) */}
-                    <Button 
-                      onClick={() => copyToClipboard('all')} 
-                      className={`font-bold px-6 py-3 transition-all duration-300 shadow-lg ${
-                        copySuccess 
-                          ? 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 transform scale-105' 
-                          : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 hover:scale-105'
-                      }`}
-                      title="Copier tout l'email (Ctrl+Enter)"
-                    >
-                      <Copy className="h-5 w-5 mr-2" />
-                      {copySuccess ? t.copied : (t.copyAll || 'Tout')}
-                    </Button>
-                    </div>
-                  </div>
+                  <Button 
+                    onClick={copyToClipboard} 
+                    className={`font-bold text-lg px-8 py-3 transition-all duration-300 ${
+                      copySuccess 
+                        ? 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 transform scale-105' 
+                        : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 hover:scale-105'
+                    } shadow-lg`}
+                  >
+                    <Copy className="h-5 w-5 mr-2" />
+                    {copySuccess ? t.copied : t.copy}
+                  </Button>
                 </div>
               </>
             ) : (
