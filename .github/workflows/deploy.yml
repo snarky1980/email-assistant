@@ -38,4 +38,7 @@ jobs:
       name: github-pages
     steps:
       - uses: pnpm/action-setup@v4
+        with:
+          version: 10.4.1
+
 
