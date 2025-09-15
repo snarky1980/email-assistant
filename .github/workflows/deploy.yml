@@ -37,4 +37,5 @@ jobs:
     environment:
       name: github-pages
     steps:
-      - uses: actions/deploy-pages@v4
+      - uses: pnpm/action-setup@v4
+
