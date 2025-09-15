@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { loadState, saveState } from '@/utils/storage';
 import { Search, FileText, Copy, RotateCcw, Languages, Filter, Globe, Sparkles, Mail, Edit3 } from 'lucide-react'
 import { Button } from '@/components/ui/button.jsx'
@@ -30,7 +30,7 @@ function App() {
   const [variables, setVariables] = useState(savedState.variables || {})
   const [copySuccess, setCopySuccess] = useState(false)
 
-  const searchRef = useRef(null);
+  // Removed unused searchRef
 
   // Sauvegarder automatiquement les préférences importantes
   useEffect(() => {
@@ -143,14 +143,14 @@ function App() {
   }, [templatesData])
 
   // Remplacer les variables dans le texte
-  const replaceVariables = (text) => {
+  const replaceVariables = useCallback((text) => {
     let result = text
     Object.entries(variables).forEach(([varName, value]) => {
       const regex = new RegExp(`<<${varName}>>`, 'g')
       result = result.replace(regex, value || `<<${varName}>>`)
     })
     return result
-  }
+  }, [variables])
 
   // Charger un modèle sélectionné
   useEffect(() => {
@@ -171,7 +171,7 @@ function App() {
       setFinalSubject(subjectWithVars)
       setFinalBody(bodyWithVars)
     }
-  }, [selectedTemplate, templateLanguage])
+  }, [selectedTemplate, templateLanguage, replaceVariables, templatesData?.variables])
 
   // Mettre à jour les versions finales quand les variables changent
   useEffect(() => {
@@ -181,7 +181,7 @@ function App() {
       setFinalSubject(subjectWithVars)
       setFinalBody(bodyWithVars)
     }
-  }, [variables, selectedTemplate, templateLanguage])
+  }, [variables, selectedTemplate, templateLanguage, replaceVariables])
 
   // Copier le contenu dans le presse-papiers
   const copyToClipboard = async () => {
