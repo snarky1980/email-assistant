@@ -139,6 +139,7 @@ Le fichier `public/complete_email_templates.json` contient :
 - **Problèmes de police** : Suppression des drop-shadow illisibles
 - **Surlignage des variables** : Implémentation dans les zones d'édition
 - **Configuration Vite** : Optimisation pour le déploiement
+-**GitHub Actions gère GitHub Pages automatiquement
 - **Code organisation** : Documentation et structure claire
 
 ### 🎯 Fonctionnalités à venir
@@ -146,10 +147,6 @@ Le fichier `public/complete_email_templates.json` contient :
 - Intégration d'un bot IA pour l'assistance à la rédaction
 - Identité visuelle du Bureau de la traduction
 - Sauvegarde automatique des brouillons
-
-## 📄 Licence
-
-Ce projet est développé pour le Bureau de la traduction du gouvernement canadien.
 
 ## 🤝 Contribution
 
@@ -160,7 +157,5 @@ Pour contribuer au projet :
 4. Pousser vers la branche
 5. Ouvrir une Pull Request
 
----
 
-**Développé avec ❤️ pour le Bureau de la traduction**
 
