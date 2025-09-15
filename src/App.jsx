@@ -164,14 +164,8 @@ function App() {
         }
       })
       setVariables(initialVars)
-      
-      // Mettre à jour les versions finales avec les variables remplacées
-      const subjectWithVars = replaceVariables(selectedTemplate.subject[templateLanguage] || '')
-      const bodyWithVars = replaceVariables(selectedTemplate.body[templateLanguage] || '')
-      setFinalSubject(subjectWithVars)
-      setFinalBody(bodyWithVars)
     }
-  }, [selectedTemplate, templateLanguage, replaceVariables, templatesData?.variables])
+  }, [selectedTemplate, templatesData?.variables])
 
   // Mettre à jour les versions finales quand les variables changent
   useEffect(() => {
